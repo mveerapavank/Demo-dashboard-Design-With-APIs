@@ -128,101 +128,108 @@
   opacity: 1;
 }
 
-/* --- 4. Details Section --- */
+/* --- 4. NEW: Dark Detection Result Details Section --- */
 .result-details { 
   flex: 1; 
-  padding: 30px 25px;
+  padding: 40px 30px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  border-left: 1px solid #e5e7eb;
-  background: #ffffff;
-  min-width: 350px;
-  gap: 25px;
+  justify-content: flex-start;
+  border-left: 1px solid #1e293b;
+  background: #050a18; /* Dark Navy Background */
+  min-width: 400px;
+  color: white;
+}
+
+.detection-title {
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: #ffffff;
+}
+
+.meta-info-row {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 35px;
+  font-size: 14px;
+  color: #94a3b8; /* Slate gray info text */
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.stats-main-label {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #ffffff;
+}
+
+.stats-vertical-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* NESTED STATISTICS BOXES */
+.stat-data-box {
+  background: #111827; /* Darker box background */
+  padding: 18px 20px;
+  border-radius: 12px;
+  border: 1px solid #1e293b;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.stat-data-box:hover {
+  border-color: #3b82f6;
+  background: #161e2d;
+}
+
+.stat-box-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #64748b;
+  font-weight: 800;
+}
+
+.stat-box-value {
+  font-size: 24px;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.details-card-footer {
+  margin-top: auto;
+  padding-top: 30px;
+  display: flex;
+  justify-content: flex-start;
 }
 
 .badge-status {
-  display: inline-block;
-  background: #eef2ff;
-  color: #4f46e5;
+  background: #1e293b;
+  color: #3b82f6;
   padding: 6px 14px;
   border-radius: 8px;
   font-size: 11px;
   font-weight: 800;
   text-transform: uppercase;
-  margin-bottom: 16px;
-  width: fit-content;
-  transition: all 0.3s ease;
 }
 
 .badge-status.verified-badge {
-  background: #ecfdf5 !important;
-  color: #059669 !important;
-  border: 1px solid #10b981;
+  background: #064e3b !important;
+  color: #34d399 !important;
+  border: 1px solid #059669;
 }
 
-.card-side-title {
-  font-size: 22px;
-  font-weight: 800;
-  color: #111827;
-  margin-bottom: 25px;
-}
-
-.meta-info-mini {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-bottom: 30px;
-}
-
-.detail-label { 
-  display: block; 
-  font-size: 11px; 
-  color: #9ca3af; 
-  text-transform: uppercase; 
-  font-weight: 800;
-}
-
-.detail-value { 
-  font-size: 15px; 
-  color: #111827; 
-  font-weight: 600; 
-}
-
-.bottom-meta {
-  border-top: 1px solid #f3f4f6;
-  padding-top: 30px;
-}
-
-.metric-row {
-  display: flex;
-  justify-content: space-between;
-  font-size: 14px;
-  padding-bottom: 8px;
-}
-
-.m-label { color: #9ca3af; font-weight: 600; }
-.m-value { color: #4f46e5; font-weight: 800; }
-
-.metrics-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-
-.mini-block {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.metrics-group {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-/* --- 5. REDUCED SIZE: SuperAdmin Action Buttons --- */
+/* --- 5. SuperAdmin Action Buttons --- */
 .superadmin-button-container {
   display: flex;
   justify-content: center;
@@ -327,17 +334,14 @@
   box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
 }
 
-/* Theme for SuperAdmin submitting to Admin */
 .global-submit-btn.superadmin-theme {
   background: linear-gradient(135deg, #10b981 0%, #059669 100%);
 }
 
-/* Theme for Admin publishing to User */
 .global-submit-btn.admin-theme { 
   background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); 
 }
 
-/* Disabled state */
 .global-submit-btn:disabled {
   background: #9ca3af;
   cursor: not-allowed;
@@ -359,18 +363,6 @@
   padding: 0;
   margin: 0;
   line-height: 1;
-  font-family: inherit;
-}
-
-.close-modal:hover {
-  transform: scale(1.2);
-  color: #f3f4f6;
-}
-
-.close-modal:focus {
-  outline: 2px solid #10b981;
-  outline-offset: 2px;
-  border-radius: 4px;
 }
 
 .image-modal-overlay {

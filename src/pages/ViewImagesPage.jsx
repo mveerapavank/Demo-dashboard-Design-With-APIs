@@ -11,7 +11,6 @@ export default function ViewImagesPage({ user }) {
   const [isPublishedToUser, setIsPublishedToUser] = useState(false);
 
   useEffect(() => {
-    // Load states and parse them to actual booleans
     const loadStates = () => {
       const approved = JSON.parse(localStorage.getItem("superadmin_approved") || "[]");
       const rejected = JSON.parse(localStorage.getItem("superadmin_rejected") || "[]");
@@ -24,10 +23,8 @@ export default function ViewImagesPage({ user }) {
       setIsPublishedToUser(published);
     };
 
-    // Load on mount
     loadStates();
 
-    // Listen for storage changes from other tabs
     const handleStorageChange = () => {
       loadStates();
     };
@@ -36,22 +33,13 @@ export default function ViewImagesPage({ user }) {
     return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
 
-  // --- SUPER ADMIN LOGIC ---
   const handleSuperAdminAction = (action, id) => {
     if (action === "Reject") {
       setRejectedIds((prev) => {
-        let updated;
-        // Toggle: if already rejected, remove it; otherwise add it
-        if (prev.includes(id)) {
-          updated = prev.filter(item => item !== id);
-        } else {
-          updated = [...prev, id];
-        }
-        // Persist to localStorage
+        let updated = prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id];
         localStorage.setItem("superadmin_rejected", JSON.stringify(updated));
         return updated;
       });
-      // Remove from accepted when rejecting
       setAcceptedIds((prev) => {
         const updated = prev.filter(item => item !== id);
         localStorage.setItem("superadmin_approved", JSON.stringify(updated));
@@ -59,17 +47,10 @@ export default function ViewImagesPage({ user }) {
       });
     } else {
       setAcceptedIds((prev) => {
-        // Toggle: if already accepted, remove it; otherwise add it
-        let updated;
-        if (prev.includes(id)) {
-          updated = prev.filter(item => item !== id);
-        } else {
-          updated = [...prev, id];
-        }
+        let updated = prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id];
         localStorage.setItem("superadmin_approved", JSON.stringify(updated));
         return updated;
       });
-      // Remove from rejected when accepting
       setRejectedIds((prev) => {
         const updated = prev.filter((item) => item !== id);
         localStorage.setItem("superadmin_rejected", JSON.stringify(updated));
@@ -82,15 +63,12 @@ export default function ViewImagesPage({ user }) {
     localStorage.setItem("data_sent_to_admin", "true");
     setSuperAdminSubmitted(true);
     alert("✅ Dataset verified and submitted to the Admin panel.");
-    // No need to reload - storage event listener will sync other tabs
   };
 
-  // --- ADMIN PUBLISH LOGIC ---
   const handlePublishToUser = () => {
     localStorage.setItem("data_published_to_user", "true");
     setIsPublishedToUser(true);
     alert("🚀 Data published! Users can now view the gallery.");
-    // No need to reload - storage event listener will sync other tabs
   };
 
   const handleAdminCheckbox = (id) => {
@@ -107,21 +85,13 @@ export default function ViewImagesPage({ user }) {
     setAdminSelectedIds([]);
   };
 
-  // --- LOGIC: CHECK IF ALL ARE APPROVED ---
   const allApprovedBySuper = imageData.images.length > 0 && 
                              imageData.images.every(img => acceptedIds.includes(img.id));
 
-  // --- FILTERING LOGIC: CORRECTED ---
   const filteredImages = imageData.images.filter(() => {
-    // 1. Super Admin sees everything
     if (user.role === "superadmin") return true; 
-
-    // 2. Admin sees images ONLY if superAdminSubmitted is true
     if (user.role === "admin") return superAdminSubmitted === true;
-
-    // 3. User sees images ONLY if isPublishedToUser is true
     if (user.role === "user") return isPublishedToUser === true;
-
     return false;
   });
 
@@ -171,31 +141,32 @@ export default function ViewImagesPage({ user }) {
                       <div className="zoom-hint">Click to expand 🔍</div>
                     </div>
                     
+                    {/* NEW: DARK THEME DETECTION RESULT CONTAINER */}
                     <div className="result-details">
-                      <div className="top-meta">
+                      <div className="detection-header-area">
+                        <h2 className="detection-title">Detection Result</h2>
+                        <div className="meta-info-row">
+                          <span className="meta-item">📅 {item.meta.date || "2025-12-24"}</span>
+                          <span className="meta-item">📍 {item.meta.location}</span>
+                        </div>
+                      </div>
+
+                      <div className="object-stats-area">
+                        <h3 className="stats-section-title">Object Statistics</h3>
+                        <div className="stats-vertical-stack">
+                          {item.metrics.map((metric) => (
+                            <div key={metric.id} className="stat-data-box">
+                              <span className="stat-box-label">{metric.label}</span>
+                              <span className="stat-box-value">{metric.value}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="details-card-footer">
                         <span className={`badge-status ${acceptedIds.includes(item.id) ? "verified-badge" : ""}`}>
                           {acceptedIds.includes(item.id) ? "Verified" : `ID: ${item.id}`}
                         </span>
-                        <h2 className="card-side-title">{item.cardTitle}</h2>
-                        <div className="meta-info-mini">
-                          <div className="mini-block">
-                            <span className="detail-label">Location</span>
-                            <span className="detail-value">{item.meta.location}</span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="bottom-meta">
-                        <div className="metrics-group">
-                          <span className="detail-label">{item.sectionTitle}</span>
-                          <div className="metrics-grid">
-                            {item.metrics.map((metric) => (
-                              <div key={metric.id} className="metric-row">
-                                <span className="m-label">{metric.label}</span>
-                                <span className="m-value">{metric.value}</span>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
                       </div>
                     </div>
                   </div>
@@ -224,21 +195,18 @@ export default function ViewImagesPage({ user }) {
       </div>
 
       <div className="final-submit-wrapper">
-        {/* SUPER ADMIN: SUBMIT TO ADMIN */}
         {user.role === "superadmin" && allApprovedBySuper && !superAdminSubmitted && (
           <button className="global-submit-btn superadmin-theme" onClick={handleFinalSubmitToAdmin}>
             Submit to Admin
           </button>
         )}
 
-        {/* ADMIN: PUBLISH TO USER */}
         {user.role === "admin" && superAdminSubmitted && !isPublishedToUser && (
           <button className="global-submit-btn admin-theme" onClick={handlePublishToUser}>
             Publish to User View
           </button>
         )}
 
-        {/* ADMIN: SEND BACK TO SUPER ADMIN */}
         {user.role === "admin" && adminSelectedIds.length > 0 && (
           <button className="global-submit-btn admin-theme" onClick={submitToSuperAdmin}>
             Send {adminSelectedIds.length} to Super Admin
@@ -248,14 +216,7 @@ export default function ViewImagesPage({ user }) {
 
       {selectedImg && (
         <div className="image-modal-overlay" onClick={() => setSelectedImg(null)}>
-          <button 
-            className="close-modal" 
-            onClick={() => setSelectedImg(null)}
-            aria-label="Close image"
-            type="button"
-          >
-            ×
-          </button>
+          <button className="close-modal" onClick={() => setSelectedImg(null)}>×</button>
           <img src={selectedImg} className="modal-content-img" alt="Full size preview" onClick={(e) => e.stopPropagation()} />
         </div>
       )}
