@@ -3,9 +3,7 @@ import React, { useEffect, useState } from "react";
 import "./timer.css";
 
 export default function Timer({ until, onExpire }) {
-  const [remaining, setRemaining] = useState(
-    until ? Math.max(0, until - Date.now()) : 0
-  );
+  const [remaining, setRemaining] = useState(0);
 
   useEffect(() => {
     if (!until) {

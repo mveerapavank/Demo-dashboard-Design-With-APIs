@@ -7,7 +7,6 @@ export default function ViewImagesPage({ user }) {
   const [rejectedIds, setRejectedIds] = useState([]);
   const [acceptedIds, setAcceptedIds] = useState([]); 
   const [adminSelectedIds, setAdminSelectedIds] = useState([]); 
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [superAdminSubmitted, setSuperAdminSubmitted] = useState(false);
   const [isPublishedToUser, setIsPublishedToUser] = useState(false);
 
@@ -15,10 +14,12 @@ export default function ViewImagesPage({ user }) {
     // Load states and parse them to actual booleans
     const loadStates = () => {
       const approved = JSON.parse(localStorage.getItem("superadmin_approved") || "[]");
+      const rejected = JSON.parse(localStorage.getItem("superadmin_rejected") || "[]");
       const submitted = localStorage.getItem("data_sent_to_admin") === "true";
       const published = localStorage.getItem("data_published_to_user") === "true";
       
       setAcceptedIds(approved);
+      setRejectedIds(rejected);
       setSuperAdminSubmitted(submitted);
       setIsPublishedToUser(published);
     };
@@ -39,12 +40,16 @@ export default function ViewImagesPage({ user }) {
   const handleSuperAdminAction = (action, id) => {
     if (action === "Reject") {
       setRejectedIds((prev) => {
+        let updated;
         // Toggle: if already rejected, remove it; otherwise add it
         if (prev.includes(id)) {
-          return prev.filter(item => item !== id);
+          updated = prev.filter(item => item !== id);
         } else {
-          return [...prev, id];
+          updated = [...prev, id];
         }
+        // Persist to localStorage
+        localStorage.setItem("superadmin_rejected", JSON.stringify(updated));
+        return updated;
       });
       // Remove from accepted when rejecting
       setAcceptedIds((prev) => {
@@ -55,18 +60,21 @@ export default function ViewImagesPage({ user }) {
     } else {
       setAcceptedIds((prev) => {
         // Toggle: if already accepted, remove it; otherwise add it
+        let updated;
         if (prev.includes(id)) {
-          const updated = prev.filter(item => item !== id);
-          localStorage.setItem("superadmin_approved", JSON.stringify(updated));
-          return updated;
+          updated = prev.filter(item => item !== id);
         } else {
-          const updated = [...prev, id];
-          localStorage.setItem("superadmin_approved", JSON.stringify(updated));
-          return updated;
+          updated = [...prev, id];
         }
+        localStorage.setItem("superadmin_approved", JSON.stringify(updated));
+        return updated;
       });
       // Remove from rejected when accepting
-      setRejectedIds((prev) => prev.filter((item) => item !== id));
+      setRejectedIds((prev) => {
+        const updated = prev.filter((item) => item !== id);
+        localStorage.setItem("superadmin_rejected", JSON.stringify(updated));
+        return updated;
+      });
     }
   };
 
@@ -83,17 +91,6 @@ export default function ViewImagesPage({ user }) {
     setIsPublishedToUser(true);
     alert("🚀 Data published! Users can now view the gallery.");
     // No need to reload - storage event listener will sync other tabs
-  };
-
-  const submitRejections = async () => {
-    setIsSubmitting(true);
-    try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      alert("Rejections processed.");
-      setRejectedIds([]);
-    } finally {
-      setIsSubmitting(false);
-    }
   };
 
   const handleAdminCheckbox = (id) => {
@@ -113,16 +110,9 @@ export default function ViewImagesPage({ user }) {
   // --- LOGIC: CHECK IF ALL ARE APPROVED ---
   const allApprovedBySuper = imageData.images.length > 0 && 
                              imageData.images.every(img => acceptedIds.includes(img.id));
-  
-  // Debug: Log the state
-  useEffect(() => {
-    console.log("Accepted IDs:", acceptedIds);
-    console.log("Image IDs:", imageData.images.map(img => img.id));
-    console.log("All Approved:", allApprovedBySuper);
-  }, [acceptedIds]);
 
   // --- FILTERING LOGIC: CORRECTED ---
-  const filteredImages = imageData.images.filter((item) => {
+  const filteredImages = imageData.images.filter(() => {
     // 1. Super Admin sees everything
     if (user.role === "superadmin") return true; 
 
@@ -177,7 +167,7 @@ export default function ViewImagesPage({ user }) {
                 <div className={`result-card ${rejectedIds.includes(item.id) ? "card-rejected" : ""} ${adminSelectedIds.includes(item.id) ? "card-selected-admin" : ""}`}>
                   <div className="card-main-content">
                     <div className="result-image-container" onClick={() => setSelectedImg(item.mainImage)}>
-                      <img src={item.mainImage} alt="" className="result-img" />
+                      <img src={item.mainImage} alt={item.cardTitle} className="result-img" />
                       <div className="zoom-hint">Click to expand 🔍</div>
                     </div>
                     
@@ -198,10 +188,10 @@ export default function ViewImagesPage({ user }) {
                         <div className="metrics-group">
                           <span className="detail-label">{item.sectionTitle}</span>
                           <div className="metrics-grid">
-                            {item.metrics.map(m => (
-                              <div key={m.id} className="metric-row">
-                                <span className="m-label">{m.label}</span>
-                                <span className="m-value">{m.value}</span>
+                            {item.metrics.map((metric) => (
+                              <div key={metric.id} className="metric-row">
+                                <span className="m-label">{metric.label}</span>
+                                <span className="m-value">{metric.value}</span>
                               </div>
                             ))}
                           </div>
@@ -258,8 +248,15 @@ export default function ViewImagesPage({ user }) {
 
       {selectedImg && (
         <div className="image-modal-overlay" onClick={() => setSelectedImg(null)}>
-          <span className="close-modal">&times;</span>
-          <img src={selectedImg} className="modal-content-img" alt="" onClick={(e) => e.stopPropagation()} />
+          <button 
+            className="close-modal" 
+            onClick={() => setSelectedImg(null)}
+            aria-label="Close image"
+            type="button"
+          >
+            ×
+          </button>
+          <img src={selectedImg} className="modal-content-img" alt="Full size preview" onClick={(e) => e.stopPropagation()} />
         </div>
       )}
     </div>

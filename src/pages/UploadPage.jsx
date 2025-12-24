@@ -75,7 +75,7 @@ export default function UploadPage() {
       } else {
         setStatus({ type: "error", message: "Upload failed. Server error." });
       }
-    } catch (error) {
+    } catch {
       clearInterval(progressInterval);
       setStatus({ type: "error", message: "Network error: Server unreachable." });
     } finally {

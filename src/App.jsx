@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Routes, Route, Navigate, useNavigate, useLocation } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Sidebar from "./components/Sidebar";
 import ProtectedRoute from "./components/ProtectedRoute";
 import UploadPage from "./pages/UploadPage";
@@ -11,7 +11,6 @@ import "./App.css";
 export default function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const location = useLocation();
 
   useEffect(() => {
     const savedUser = localStorage.getItem("user");
@@ -19,7 +18,7 @@ export default function App() {
       try {
         const parsedUser = JSON.parse(savedUser);
         setUser(parsedUser);
-      } catch (error) {
+      } catch {
         localStorage.removeItem("user");
         setUser(null);
       }

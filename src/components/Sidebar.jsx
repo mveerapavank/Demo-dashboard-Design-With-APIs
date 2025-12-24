@@ -15,7 +15,7 @@ export default function Sidebar({ user, setUser }) {
     const key = user.role === "superadmin" ? "superadmin_notifications" : "admin_alerts";
     const data = JSON.parse(localStorage.getItem(key) || "[]");
     setNotifs(data);
-  }, [isDrawerOpen, user.role]);
+  }, [user.role]);
 
   const handleLogout = () => {
     localStorage.removeItem("user");
