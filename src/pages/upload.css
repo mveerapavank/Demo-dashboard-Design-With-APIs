@@ -1,0 +1,240 @@
+/* Align the label and percentage on one line */
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 4px;
+}
+
+.progress-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+}
+
+/* Make the percentage stand out */
+.progress-percentage {
+  font-size: 14px;
+  font-weight: 800;
+  color: #4f46e5;
+}
+
+.progress-container {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.progress-bar-bg {
+  width: 100%;
+  height: 10px; /* Made slightly thicker for visibility */
+  background: #f3f4f6;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4f46e5, #818cf8);
+  transition: width 0.3s ease-in-out;
+}
+
+/* Processing Timer UI */
+.cooldown-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: #fffbeb;
+  border: 1px solid #fcd34d;
+  padding: 12px;
+  border-radius: 8px;
+  margin-top: 10px;
+}
+
+.timer-text {
+  font-size: 14px;
+  color: #92400e;
+  margin: 0;
+}
+
+.timer-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid #fcd34d;
+  border-top-color: #92400e;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Ensure progress bar looks clean when finished */
+.progress-bar-fill {
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+
+
+
+/* Progress Bar Styles */
+.progress-container {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.progress-bar-bg {
+  width: 100%;
+  height: 8px;
+  background: #f3f4f6;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4f46e5, #818cf8);
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  font-size: 12px;
+  font-weight: 700;
+  color: #4f46e5;
+  text-align: right;
+}
+
+/* Status Message Styling */
+.status-msg {
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  margin-top: 10px;
+}
+
+.status-msg.success { background: #ecfdf5; color: #059669; border: 1px solid #10b981; }
+.status-msg.error { background: #fef2f2; color: #dc2626; border: 1px solid #f87171; }
+
+/* src/pages/upload.css */
+/* Status Messages */
+.status-msg {
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: center;
+}
+
+.status-msg.success {
+  background: #ecfdf5;
+  color: #059669;
+  border: 1px solid #10b981;
+}
+
+.status-msg.error {
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #f87171;
+}
+/* Wrapper to ensure the container takes full available width */
+.page-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+.upload-container {
+  width: 100%;
+  max-width: 600px; /* Professional width for a dashboard card */
+}
+
+/* Header Text - Centered */
+.upload-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.page-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 8px;
+}
+
+.page-desc {
+  color: #6b7280;
+  font-size: 15px;
+}
+
+/* THE CARD DESIGN (Modern Indigo Theme) */
+.card {
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left; /* Keep internal text aligned left */
+}
+
+.label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+}
+
+/* Modern Dropzone */
+.dropzone {
+  border: 2px dashed #d1d5db;
+  border-radius: 12px;
+  padding: 40px;
+  text-align: center;
+  cursor: pointer;
+  background: #f9fafb;
+  transition: all 0.2s ease;
+}
+.dropzone:hover {
+  border-color: #6366f1;
+  background: #ffffff;
+}
+
+.icon-circle {
+  width: 56px; height: 56px; background: #eef2ff; color: #4f46e5;
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 16px auto;
+}
+
+.link-text { color: #4f46e5; font-weight: 700; text-decoration: underline; }
+
+/* Submit Button */
+.submit-btn {
+  width: 100%; 
+  padding: 14px; 
+  background: #4f46e5; 
+  color: white;
+  border: none; 
+  border-radius: 8px; 
+  font-weight: 600; 
+  font-size: 16px;
+  cursor: pointer;
+}
+.submit-btn:hover { background: #4338ca; }
+.submit-btn:disabled { background: #d1d5db; cursor: not-allowed; }
+
+.hidden-file { display: none; }

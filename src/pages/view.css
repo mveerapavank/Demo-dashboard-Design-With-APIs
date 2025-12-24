@@ -1,0 +1,362 @@
+/* --- 1. Page Layout & Typography --- */
+.view-page-wrapper {
+  width: 100%;
+  max-width: 1400px; 
+  margin: 0 auto;
+  padding: 60px 20px;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.view-header {
+  margin-bottom: 40px;
+  text-align: left;
+}
+
+.page-title {
+  font-size: 32px;
+  font-weight: 800;
+  color: #111827;
+  margin-bottom: 8px;
+}
+
+.page-desc {
+  color: #6b7280;
+  font-size: 16px;
+}
+
+/* --- 2. Results List & Card Structure --- */
+.results-list {
+  display: flex;
+  flex-direction: column;
+  gap: 70px; 
+  min-height: 400px;
+}
+
+.card-outer-wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.card-and-check {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  width: 100%;
+}
+
+.selection-area {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 10px;
+}
+
+.card-checkbox {
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  accent-color: #4f46e5;
+  border-radius: 6px;
+}
+
+/* THE MAIN CARD */
+.result-card {
+  flex-grow: 1;
+  background: white;
+  border-radius: 24px;
+  border: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; 
+  box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+  min-height: 500px; 
+}
+
+.card-main-content {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  width: 100%;
+}
+
+.result-card:hover {
+  transform: none; 
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+.card-selected-admin {
+  border: 2px solid #4f46e5 !important;
+  background: #f5f7ff !important;
+}
+
+.card-rejected {
+  border: 2px solid #ef4444 !important;
+  box-shadow: 0 0 15px rgba(239, 68, 68, 0.2) !important;
+}
+
+/* --- 3. Image Section --- */
+.result-image-container { 
+  flex: 3; 
+  position: relative;
+  background: #f3f4f6;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.result-img { 
+  width: 100%; 
+  height: 100%; 
+  object-fit: cover; 
+}
+
+.zoom-hint {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 30px;
+  font-size: 13px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.result-image-container:hover .zoom-hint {
+  opacity: 1;
+}
+
+/* --- 4. Details Section --- */
+.result-details { 
+  flex: 1; 
+  padding: 40px 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  border-left: 1px solid #f3f4f6;
+  background: #ffffff;
+  min-width: 350px;
+}
+
+.badge-status {
+  display: inline-block;
+  background: #eef2ff;
+  color: #4f46e5;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  width: fit-content;
+  transition: all 0.3s ease;
+}
+
+.badge-status.verified-badge {
+  background: #ecfdf5 !important;
+  color: #059669 !important;
+  border: 1px solid #10b981;
+}
+
+.card-side-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: #111827;
+  margin-bottom: 25px;
+}
+
+.meta-info-mini {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 30px;
+}
+
+.detail-label { 
+  display: block; 
+  font-size: 11px; 
+  color: #9ca3af; 
+  text-transform: uppercase; 
+  font-weight: 800;
+}
+
+.detail-value { 
+  font-size: 15px; 
+  color: #111827; 
+  font-weight: 600; 
+}
+
+.bottom-meta {
+  border-top: 1px solid #f3f4f6;
+  padding-top: 30px;
+}
+
+.metric-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  padding-bottom: 8px;
+}
+
+.m-label { color: #9ca3af; font-weight: 600; }
+.m-value { color: #4f46e5; font-weight: 800; }
+
+/* --- 5. REDUCED SIZE: SuperAdmin Action Buttons --- */
+.superadmin-button-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px; 
+  padding: 15px 0;
+  background: #1e293b; 
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.action-btn-outline {
+  padding: 8px 32px; 
+  background: transparent;
+  border-radius: 8px; 
+  font-weight: 700;
+  font-size: 12px; 
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.2s ease;
+}
+
+.action-btn-outline.accept {
+  border: 1.5px solid #10b981;
+  color: #10b981;
+}
+
+.action-btn-outline.accept:hover { background: rgba(16, 185, 129, 0.1); }
+
+.action-btn-outline.accept.active-choice {
+  background: #10b981;
+  color: white;
+}
+
+.action-btn-outline.reject {
+  border: 1.5px solid #ef4444;
+  color: #ef4444;
+}
+
+.action-btn-outline.reject:hover { background: rgba(239, 68, 68, 0.1); }
+
+.action-btn-outline.reject.active-choice {
+  background: #ef4444;
+  color: white;
+}
+
+/* --- 6. Empty/Locked State --- */
+.empty-pipeline {
+  text-align: center;
+  padding: 80px 20px;
+  background: #f9fafb;
+  border: 2px dashed #e5e7eb;
+  border-radius: 24px;
+  margin-top: 20px;
+}
+
+.empty-icon {
+  font-size: 50px;
+  margin-bottom: 20px;
+  display: inline-block;
+  animation: lockShake 3s infinite;
+}
+
+.empty-pipeline h2 {
+  font-size: 24px;
+  color: #111827;
+  margin-bottom: 10px;
+}
+
+.empty-pipeline p {
+  color: #6b7280;
+  font-size: 16px;
+}
+
+/* --- 7. Global Submit & Footer Buttons --- */
+.final-submit-wrapper {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1500;
+  display: flex;
+  gap: 20px;
+}
+
+.global-submit-btn {
+  padding: 14px 40px;
+  background: #111827;
+  color: white;
+  border-radius: 50px;
+  font-weight: 800;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.global-submit-btn:hover { 
+  transform: translateY(-5px); 
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+}
+
+/* Theme for SuperAdmin submitting to Admin */
+.global-submit-btn.superadmin-theme {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+/* Theme for Admin publishing to User */
+.global-submit-btn.admin-theme { 
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); 
+}
+
+/* Disabled state */
+.global-submit-btn:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Modal & Animations */
+.image-modal-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.modal-content-img {
+  max-width: 90%;
+  max-height: 85vh;
+  object-fit: contain;
+  border-radius: 12px;
+  animation: modalZoomIn 0.3s ease-out;
+}
+
+@keyframes lockShake {
+  0%, 100% { transform: rotate(0); }
+  10%, 30%, 50% { transform: rotate(-10deg); }
+  20%, 40%, 60% { transform: rotate(10deg); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes modalZoomIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}

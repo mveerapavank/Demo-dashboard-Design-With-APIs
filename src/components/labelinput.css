@@ -1,0 +1,39 @@
+.label-input-root { display: flex; flex-direction: column; gap: 10px; }
+.label-add-row { display: flex; gap: 8px; }
+
+.label-input-box {
+  flex-grow: 1;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+}
+.label-input-box:focus { outline: 2px solid #6366f1; border-color: transparent; }
+
+.label-add-btn {
+  background: #f3f4f6;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 0 16px;
+  cursor: pointer;
+  font-size: 18px;
+  color: #374151;
+}
+.label-add-btn:hover { background: #e5e7eb; }
+
+.label-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.label-chip {
+  background: #eef2ff; /* Light Blue Background */
+  border: 1px solid #c7d2fe;
+  color: #4338ca;       /* Dark Blue Text */
+  padding: 4px 10px;
+  border-radius: 16px;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.label-chip-remove {
+  background: none; border: none; cursor: pointer; color: #6366f1; font-weight: bold; font-size: 14px;
+}
+.label-chip-remove:hover { color: #3730a3; }

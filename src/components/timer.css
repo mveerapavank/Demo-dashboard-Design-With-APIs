@@ -1,0 +1,19 @@
+/* src/components/timer.css */
+.timer-root {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #ef4444; /* Red color for warning */
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.timer-time {
+  font-family: monospace;
+  font-size: 15px;
+  background: #fef2f2;
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid #fee2e2;
+}
