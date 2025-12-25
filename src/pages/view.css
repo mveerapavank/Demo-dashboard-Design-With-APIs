@@ -87,22 +87,26 @@
 
 /* THE MAIN CARD */
 .result-card {
-  flex-grow: 1;
+  height: 550px;       /* Fixed Height */
+  width: 100%;
   background: white;
   border-radius: 16px;
   border: 1px solid #e5e7eb;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden; 
   box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-  min-height: 400px; /* Slightly taller to balance wide image */
+  overflow: hidden;    /* Keeps everything clean */
+  
+  display: flex;
+  flex-direction: column; /* Stack Content above Buttons */
+  position: relative;
 }
 
 .card-main-content {
   display: flex;
-  flex-direction: row;
+  flex-direction: row; /* Side-by-Side */
   flex: 1;
   width: 100%;
+  height: 100%;
+  overflow: hidden;
 }
 
 .result-card:hover {
@@ -116,17 +120,19 @@
 
 /* --- 3. Image Section (3/4 Size) --- */
 .result-image-container { 
-  flex: 3; /* UPDATED: Takes up 3 parts */
+  flex: 3;          /* 3/4 of the space */
+  height: 100%;
+  width: auto;
   position: relative;
   background: #f3f4f6;
   overflow: hidden;
-  cursor: pointer;
 }
 
 .result-img { 
   width: 100%; 
   height: 100%; 
-  object-fit: cover; 
+  object-fit: cover;   /* Fill the box perfectly */
+  display: block;
 }
 
 .zoom-hint {
@@ -149,14 +155,18 @@
 
 /* --- 4. DARK DETAILS SECTION (1 Part) --- */
 .result-details { 
-  flex: 1; /* UPDATED: Takes up 1 part */
+  flex: 1;          /* 1/4 of the space */
+  height: 100%;
+  min-width: 200px; /* Reduced min-width so it fits in 1/4 space */
+  
   background-color: #030610; 
-  padding: 25px 20px;
+  padding: 15px;    /* Slightly reduced padding */
   display: flex;
   flex-direction: column;
-  border-left: 1px solid #1e293b;
-  min-width: 280px; /* Reduced min-width to fit into 1/4 space */
+  justify-content: space-between;
   color: white;
+  border-left: 1px solid #1e293b;
+  overflow-y: auto;
 }
 
 /* Header */
@@ -279,13 +289,15 @@
 
 /* --- 5. Action Buttons --- */
 .superadmin-button-container {
+  flex-shrink: 0;      /* CRITICAL: Never let this shrink or hide! */
+  padding: 12px;
+  background: #1e293b; 
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 15px; 
-  padding: 12px 0;
-  background: #1e293b; 
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  gap: 10px; 
 }
 
 .action-btn-outline {
@@ -775,4 +787,78 @@
 
 .global-submit-btn.superadmin-theme {
     background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+/* --- HIDDEN PDF REPORT TEMPLATE --- */
+#print-container {
+  position: absolute; /* Changed from fixed to absolute for better capture */
+  left: -9999px;
+  top: 0;
+  width: 210mm; /* Match A4 width exactly */
+  background: white;
+  padding: 20px; /* Reduced padding slightly */
+  color: black;
+  z-index: -1;
+}
+
+.print-item {
+  /* No margin-bottom needed since we do page breaks manually now */
+  padding: 20px;
+  background: white;
+  width: 100%;
+  box-sizing: border-box; /* Ensures padding doesn't increase width */
+}
+
+.print-image-box {
+  width: 100%;
+  margin-bottom: 20px;
+  border: 1px solid #ddd;
+  padding: 5px;
+  /* Fixed height for image area in PDF to look uniform */
+  height: 400px; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #f9f9f9;
+}
+
+.print-img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain; /* Ensures full image is visible */
+}
+
+.print-table-box {
+    padding: 10px;
+}
+
+/* --- REPORT TABLE STYLES --- */
+.report-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+}
+
+.report-table th, 
+.report-table td {
+  border: 1px solid #cbd5e1;
+  padding: 12px;
+  text-align: left;
+}
+
+.report-table th {
+  background-color: #f1f5f9; /* Light gray header */
+  color: #334155;
+  font-weight: 700;
+  text-transform: uppercase;
+  width: 40%;
+}
+
+.report-table td {
+  color: #0f172a;
+  font-weight: 500;
+}
+
+.report-table tr:nth-child(even) {
+  background-color: #f8fafc; /* Zebra striping */
 }

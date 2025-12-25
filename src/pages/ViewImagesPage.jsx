@@ -5,7 +5,9 @@ import "./view.css";
 
 export default function ViewImagesPage({ user }) {
   const [selectedImg, setSelectedImg] = useState(null);
-  const pdfRef = useRef(); // Reference for PDF generation
+  
+  // REF FOR PDF GENERATION (Points to the hidden table layout)
+  const reportRef = useRef(); 
   
   // Data State
   const [images, setImages] = useState([]);
@@ -30,7 +32,7 @@ export default function ViewImagesPage({ user }) {
   // Normalize Role
   const userRole = user?.role?.toLowerCase() || "";
 
-  // 1. Fetch Data
+  // 1. USE EFFECT: Fetch Data from Backend (ONLINE)
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -85,25 +87,46 @@ export default function ViewImagesPage({ user }) {
     alert("🚀 Live! Users can now view the gallery.");
   };
 
+  // --- SUPER ADMIN ACTION (WITH TOGGLE LOGIC) ---
   const handleSuperAdminAction = (action, id) => {
     const strId = String(id);
-    if (action === "Reject") {
-      const newRejected = rejectedIds.includes(strId) ? rejectedIds : [...rejectedIds, strId];
-      const newAccepted = acceptedIds.filter(i => i !== strId);
-      const newAdminRejects = itemsRejectedByAdmin.filter(i => i !== strId); 
-      setRejectedIds(newRejected); setAcceptedIds(newAccepted); setItemsRejectedByAdmin(newAdminRejects);
-      localStorage.setItem("superadmin_rejected", JSON.stringify(newRejected));
-      localStorage.setItem("superadmin_approved", JSON.stringify(newAccepted));
-      localStorage.setItem("admin_rejected_ids", JSON.stringify(newAdminRejects));
-    } else {
-      const newAccepted = acceptedIds.includes(strId) ? acceptedIds : [...acceptedIds, strId];
-      const newRejected = rejectedIds.filter(i => i !== strId);
-      const newAdminRejects = itemsRejectedByAdmin.filter(i => i !== strId); 
-      setAcceptedIds(newAccepted); setRejectedIds(newRejected); setItemsRejectedByAdmin(newAdminRejects);
-      localStorage.setItem("superadmin_approved", JSON.stringify(newAccepted));
-      localStorage.setItem("superadmin_rejected", JSON.stringify(newRejected));
-      localStorage.setItem("admin_rejected_ids", JSON.stringify(newAdminRejects));
+    
+    let newAccepted = [...acceptedIds];
+    let newRejected = [...rejectedIds];
+    let newAdminRejects = [...itemsRejectedByAdmin];
+
+    if (action === "Accept") {
+      // TOGGLE: If already accepted, remove it
+      if (newAccepted.includes(strId)) {
+        newAccepted = newAccepted.filter(i => i !== strId);
+      } else {
+        // Else add to Accepted, remove from Rejected/AdminRejected
+        newAccepted.push(strId);
+        newRejected = newRejected.filter(i => i !== strId);
+        newAdminRejects = newAdminRejects.filter(i => i !== strId); 
+      }
+    } 
+    else if (action === "Reject") {
+      // TOGGLE: If already rejected, remove it
+      if (newRejected.includes(strId)) {
+        newRejected = newRejected.filter(i => i !== strId);
+        newAdminRejects = newAdminRejects.filter(i => i !== strId);
+      } else {
+        // Else add to Rejected, remove from Accepted
+        newRejected.push(strId);
+        newAccepted = newAccepted.filter(i => i !== strId);
+      }
     }
+
+    // Update States
+    setAcceptedIds(newAccepted);
+    setRejectedIds(newRejected);
+    setItemsRejectedByAdmin(newAdminRejects);
+    
+    // Sync LocalStorage
+    localStorage.setItem("superadmin_approved", JSON.stringify(newAccepted));
+    localStorage.setItem("superadmin_rejected", JSON.stringify(newRejected));
+    localStorage.setItem("admin_rejected_ids", JSON.stringify(newAdminRejects));
   };
 
   const handleAdminCheckbox = (id) => {
@@ -127,12 +150,31 @@ export default function ViewImagesPage({ user }) {
     }
   };
 
+  // --- API: Send ADMIN Rejections (ONLINE) ---
   const handleSendToAnnotation = async () => {
-    if (itemsRejectedByAdmin.length === 0) { alert("No items to send."); return; }
-    setIsSending(true);
-    const itemsToSend = images.filter(img => itemsRejectedByAdmin.includes(String(img.id)));
+    await sendIdsToAnnotationAPI(itemsRejectedByAdmin, () => {
+        setItemsRejectedByAdmin([]);
+        localStorage.removeItem("admin_rejected_ids");
+        setShowNotif(false);
+    });
+  };
 
+  // --- API: Send SUPER ADMIN Rejections (ONLINE) ---
+  const handleSuperAdminSendRejections = async () => {
+    await sendIdsToAnnotationAPI(rejectedIds, () => {
+        setRejectedIds([]);
+        localStorage.removeItem("superadmin_rejected");
+    });
+  };
+
+  // Shared API Logic (ONLINE - Hits Backend)
+  const sendIdsToAnnotationAPI = async (idList, onSuccessCallback) => {
+    if (idList.length === 0) { alert("No items to send."); return; }
+    setIsSending(true);
+    
+    const itemsToSend = images.filter(img => idList.includes(String(img.id)));
     let successCount = 0;
+    
     for (const item of itemsToSend) {
         const payload = { image_id: String(item.id), image_url: String(item.mainImage) };
         try {
@@ -144,32 +186,38 @@ export default function ViewImagesPage({ user }) {
             if (response.ok) successCount++;
         } catch (error) { console.error(error); }
     }
+    
     setIsSending(false);
+    
     if (successCount > 0) {
-        alert(`🚀 Success! Sent ${successCount} items.`);
-        setItemsRejectedByAdmin([]);
-        localStorage.removeItem("admin_rejected_ids");
-        setShowNotif(false);
+        alert(`🚀 Success! Sent ${successCount} items to Annotation Team.`);
+        if (onSuccessCallback) onSuccessCallback();
     } else {
-        alert("❌ Failed to send items.");
+        alert("❌ Failed to send items. Check console for details.");
     }
   };
 
-  // --- PDF GENERATION ---
+  // --- PDF GENERATION (Multi-Page Support) ---
   const handleDownloadPDF = async () => {
-    const input = pdfRef.current;
-    if (!input) return;
+    const container = reportRef.current;
+    if (!container) return;
 
     setIsGeneratingPdf(true);
     try {
-        const canvas = await html2canvas(input, { scale: 2, useCORS: true });
-        const imgData = canvas.toDataURL("image/png");
-        
         const pdf = new jsPDF("p", "mm", "a4");
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-        
-        pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+        const items = container.querySelectorAll('.print-item');
+
+        for (let i = 0; i < items.length; i++) {
+            const canvas = await html2canvas(items[i], { scale: 2, useCORS: true });
+            const imgData = canvas.toDataURL("image/png");
+
+            const imgWidth = 210; // A4 width in mm
+            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+            if (i > 0) pdf.addPage();
+            pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight);
+        }
+
         pdf.save("Detection_Report.pdf");
         alert("✅ Report downloaded successfully!");
     } catch (err) {
@@ -234,7 +282,6 @@ export default function ViewImagesPage({ user }) {
             <h1 className="page-title">Data Pipeline</h1>
             
             <div className="header-actions">
-                {/* PDF BUTTON FOR ADMIN & USER */}
                 {(userRole === "admin" || userRole === "user") && (
                     <button 
                         className="debug-reset-btn" 
@@ -246,7 +293,6 @@ export default function ViewImagesPage({ user }) {
                     </button>
                 )}
 
-                {/* SUPER ADMIN ACTIONS */}
                 {userRole === "superadmin" && (
                     <>
                         <div className="notif-wrapper">
@@ -287,8 +333,7 @@ export default function ViewImagesPage({ user }) {
         <p className="page-desc">Viewing as: <strong>{user.role}</strong></p>
       </div>
 
-      {/* ATTACH REF HERE FOR PDF */}
-      <div className="results-list" ref={pdfRef}>
+      <div className="results-list">
         {images.map((item) => (
           <div className="card-outer-wrapper" key={item.id}>
             <div className="card-and-check">
@@ -299,42 +344,91 @@ export default function ViewImagesPage({ user }) {
               )}
 
               <div className={`result-card ${getCardClass(item.id)}`}>
+                
+                {/* --- CARD CONTENT (75% Image / 25% Text) --- */}
                 <div className="card-main-content">
                   <div className="result-image-container" onClick={() => setSelectedImg(item.mainImage)}>
                     <img src={item.mainImage} alt="" className="result-img" />
+                    <div className="zoom-hint">Click to Zoom</div>
                   </div>
+                  
                   <div className="result-details">
-                    <div className="det-header">
-                      <h2 className="det-title">{item.cardTitle || "Result"}</h2>
-                      <div className="det-meta-row">
-                        <span className="det-meta-item">🗓️ {item.meta?.date || "N/A"}</span>
-                        <span className="det-meta-item">📍 {item.meta?.location || "Lab"}</span>
-                      </div>
-                    </div>
-                    <div className="det-stats-section">
-                      <h3 className="stats-heading">{item.sectionTitle || "Statistics"}</h3>
-                      <div className="stats-stack">
-                        {item.metrics && item.metrics.map((metric, idx) => (
-                          <div key={idx} className="stat-box-dark">
-                            <span className="sb-label">{metric.label}</span>
-                            <span className="sb-value">{metric.value}</span>
-                          </div>
-                        ))}
-                      </div>
+                    <div>
+                        <div className="det-header">
+                        <h2 className="det-title">{item.cardTitle || "Result"}</h2>
+                        <div className="det-meta-row">
+                            <span className="det-meta-item">🗓️ {item.meta?.date || "N/A"}</span>
+                            <span className="det-meta-item">📍 {item.meta?.location || "Lab"}</span>
+                        </div>
+                        </div>
+                        <div className="det-stats-section">
+                        <h3 className="stats-heading">{item.sectionTitle || "Statistics"}</h3>
+                        <div className="stats-stack">
+                            {item.metrics && item.metrics.map((metric, idx) => (
+                            <div key={idx} className="stat-box-dark">
+                                <span className="sb-label">{metric.label}</span>
+                                <span className="sb-value">{metric.value}</span>
+                            </div>
+                            ))}
+                        </div>
+                        </div>
                     </div>
                     <div className="det-footer">{getStatusBadge(item.id)}</div>
                   </div>
                 </div>
 
+                {/* --- SUPER ADMIN BUTTONS (Toggle Logic) --- */}
                 {userRole === "superadmin" && (
                   <div className="superadmin-button-container">
-                    <button className={`action-btn-outline accept ${acceptedIds.includes(String(item.id)) ? "active-choice" : ""}`} onClick={() => handleSuperAdminAction("Accept", item.id)}>Accept</button>
-                    <button className={`action-btn-outline reject ${rejectedIds.includes(String(item.id)) ? "active-choice" : ""}`} onClick={() => handleSuperAdminAction("Reject", item.id)}>Reject</button>
+                    <button 
+                        className={`action-btn-outline accept ${acceptedIds.includes(String(item.id)) ? "active-choice" : ""}`} 
+                        onClick={() => handleSuperAdminAction("Accept", item.id)}
+                    >
+                        {acceptedIds.includes(String(item.id)) ? "Accepted" : "Accept"}
+                    </button>
+                    <button 
+                        className={`action-btn-outline reject ${rejectedIds.includes(String(item.id)) ? "active-choice" : ""}`} 
+                        onClick={() => handleSuperAdminAction("Reject", item.id)}
+                    >
+                        {rejectedIds.includes(String(item.id)) ? "Rejected" : "Reject"}
+                    </button>
                   </div>
                 )}
               </div>
             </div>
           </div>
+        ))}
+      </div>
+
+      {/* --- HIDDEN REPORT CONTAINER (PDF) --- */}
+      <div id="print-container" ref={reportRef}>
+        {images.map((item) => (
+            <div key={item.id} className="print-item">
+                <div className="print-image-box">
+                    <img src={item.mainImage} alt="Report" className="print-img" />
+                </div>
+                <div className="print-table-box">
+                    <h3 className="print-title">{item.cardTitle} (ID: {item.id})</h3>
+                    <table className="report-table">
+                        <thead>
+                            <tr>
+                                <th>Parameter</th>
+                                <th>Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Date</td><td>{item.meta?.date}</td></tr>
+                            <tr><td>Location</td><td>{item.meta?.location}</td></tr>
+                            {item.metrics?.map((m, i) => (
+                                <tr key={i}>
+                                    <td>{m.label}</td>
+                                    <td>{m.value}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         ))}
       </div>
 
@@ -344,6 +438,17 @@ export default function ViewImagesPage({ user }) {
                 🔓 Unlock for Admin
             </button>
         )}
+        
+        {userRole === "superadmin" && rejectedIds.length > 0 && (
+            <button className="global-submit-btn reject-theme" onClick={handleSuperAdminSendRejections} disabled={isSending}>
+                {isSending ? "Sending..." : `Send ${rejectedIds.length} Rejected to Annotation Team`}
+            </button>
+        )}
+        
+        {userRole === "superadmin" && !allAccepted && rejectedIds.length === 0 && (
+            <div className="pipeline-status-msg">⚠️ Accept all images to unlock Admin view</div>
+        )}
+
         {userRole === "admin" && adminSelectedIds.length > 0 && (
           <button className="global-submit-btn reject-theme" onClick={submitToSuperAdmin}>
             Return {adminSelectedIds.length} to Super Admin

@@ -1,0 +1,31 @@
+{
+  "barData": [
+    { "name": "SKLM", "Rice": 850, "Wheat": 450, "Sugar": 200 },
+    { "name": "VZM", "Rice": 800, "Wheat": 420, "Sugar": 180 },
+    { "name": "VSKP", "Rice": 780, "Wheat": 390, "Sugar": 190 },
+    { "name": "EG", "Rice": 720, "Wheat": 350, "Sugar": 150 },
+    { "name": "WG", "Rice": 680, "Wheat": 330, "Sugar": 140 },
+    { "name": "KRI", "Rice": 650, "Wheat": 310, "Sugar": 130 },
+    { "name": "GNT", "Rice": 600, "Wheat": 300, "Sugar": 120 }
+  ],
+  "pieData": [
+    { "name": "Rice", "value": 52, "color": "#3b82f6" },
+    { "name": "Wheat", "value": 28, "color": "#10b981" },
+    { "name": "Sugar", "value": 15, "color": "#f59e0b" },
+    { "name": "Oats", "value": 5, "color": "#ef4444" }
+  ],
+  "areaData": [
+    { "name": "Jan", "Rice": 1200, "Wheat": 800, "Sugar": 400 },
+    { "name": "Mar", "Rice": 1500, "Wheat": 900, "Sugar": 500 },
+    { "name": "May", "Rice": 1800, "Wheat": 1100, "Sugar": 600 },
+    { "name": "Jul", "Rice": 2000, "Wheat": 1300, "Sugar": 700 },
+    { "name": "Sep", "Rice": 1400, "Wheat": 900, "Sugar": 400 },
+    { "name": "Nov", "Rice": 1900, "Wheat": 1200, "Sugar": 650 }
+  ],
+  "lineData": [
+    { "name": "Q1", "Procurement": 88, "Distribution": 92, "Storage": 89 },
+    { "name": "Q2", "Procurement": 91, "Distribution": 89, "Storage": 93 },
+    { "name": "Q3", "Procurement": 89, "Distribution": 94, "Storage": 88 },
+    { "name": "Q4", "Procurement": 93, "Distribution": 90, "Storage": 91 }
+  ]
+}

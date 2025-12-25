@@ -4,6 +4,7 @@ import Sidebar from "./components/Sidebar";
 import ProtectedRoute from "./components/ProtectedRoute";
 import UploadPage from "./pages/UploadPage";
 import ViewImagesPage from "./pages/ViewImagesPage";
+import AnalyticsPage from "./pages/AnalyticsPage"; // NEW IMPORT
 import LoginPage from "./pages/LoginPage";
 import SuperAdminLogin from "./pages/SuperAdminLogin";
 import "./App.css";
@@ -65,6 +66,16 @@ export default function App() {
             element={
               <ProtectedRoute user={user}>
                 <ViewImagesPage user={user} />
+              </ProtectedRoute>
+            } 
+          />
+          
+          {/* NEW: Analytics Route (Available to verified users) */}
+          <Route 
+            path="/analytics" 
+            element={
+              <ProtectedRoute user={user}>
+                <AnalyticsPage user={user} />
               </ProtectedRoute>
             } 
           />
