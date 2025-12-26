@@ -5,8 +5,6 @@ import "./view.css";
 
 export default function ViewImagesPage({ user }) {
   const [selectedImg, setSelectedImg] = useState(null);
-  
-  // REF FOR PDF GENERATION (Points to the hidden table layout)
   const reportRef = useRef(); 
   
   // Data State
@@ -14,43 +12,43 @@ export default function ViewImagesPage({ user }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Workflow Permission States
+  // Workflow States
   const [isSentToAdmin, setIsSentToAdmin] = useState(() => localStorage.getItem("workflow_sent_to_admin") === "true");
   const [isSentToUser, setIsSentToUser] = useState(() => localStorage.getItem("workflow_sent_to_user") === "true");
 
-  // App States
+  // Selection States
   const [rejectedIds, setRejectedIds] = useState([]);
   const [acceptedIds, setAcceptedIds] = useState([]); 
   const [adminSelectedIds, setAdminSelectedIds] = useState([]); 
   const [itemsRejectedByAdmin, setItemsRejectedByAdmin] = useState([]);
   
-  // Notification States
+  // UI States
   const [showNotif, setShowNotif] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
 
-  // Normalize Role
-  const userRole = user?.role?.toLowerCase() || "";
+  // Role Normalization
+  const userRole = user?.role?.toLowerCase()?.trim() || "";
 
-  // 1. USE EFFECT: Fetch Data from Backend (ONLINE)
+  // 1. FETCH DATA
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("http://172.18.1.25:5000/get-result");
+        const response = await fetch("http://172.18.1.34:5000/get-result");
         if (!response.ok) throw new Error("Failed to fetch images");
         const data = await response.json();
         setImages(data.images || []); 
         setLoading(false);
       } catch (err) {
         console.error("Error fetching data:", err);
-        setError("Failed to load data from server.");
+        setError("Failed to load data. Is the backend running?");
         setLoading(false);
       }
     };
     fetchData();
   }, []);
 
-  // 2. Sync Local Storage
+  // 2. SYNC LOCAL STORAGE
   useEffect(() => {
     const loadStates = () => {
       const approved = JSON.parse(localStorage.getItem("superadmin_approved") || "[]").map(String);
@@ -73,6 +71,8 @@ export default function ViewImagesPage({ user }) {
   }, []);
 
   // --- ACTIONS ---
+
+  // UNLOCK (Super Admin -> Admin)
   const handleUnlockForAdmin = () => {
     localStorage.setItem("workflow_sent_to_admin", "true");
     setIsSentToAdmin(true);
@@ -80,6 +80,20 @@ export default function ViewImagesPage({ user }) {
     alert("✅ Pipeline Unlocked! Admin can now view the images.");
   };
 
+  // RE-LOCK (For Testing/Resetting)
+  const handleReLockPipeline = () => {
+    localStorage.setItem("workflow_sent_to_admin", "false");
+    setIsSentToAdmin(false);
+    
+    // Also reset User publish state to be safe
+    localStorage.setItem("workflow_sent_to_user", "false");
+    setIsSentToUser(false);
+
+    window.dispatchEvent(new Event("storage"));
+    alert("🔒 Pipeline LOCKED. Admin can no longer see images.");
+  };
+
+  // PUBLISH (Admin -> User)
   const handlePublishToUser = () => {
     localStorage.setItem("workflow_sent_to_user", "true");
     setIsSentToUser(true);
@@ -87,43 +101,36 @@ export default function ViewImagesPage({ user }) {
     alert("🚀 Live! Users can now view the gallery.");
   };
 
-  // --- SUPER ADMIN ACTION (WITH TOGGLE LOGIC) ---
+  // SUPER ADMIN ACCEPT/REJECT
   const handleSuperAdminAction = (action, id) => {
     const strId = String(id);
-    
     let newAccepted = [...acceptedIds];
     let newRejected = [...rejectedIds];
     let newAdminRejects = [...itemsRejectedByAdmin];
 
     if (action === "Accept") {
-      // TOGGLE: If already accepted, remove it
       if (newAccepted.includes(strId)) {
-        newAccepted = newAccepted.filter(i => i !== strId);
+        newAccepted = newAccepted.filter(i => i !== strId); // Toggle Off
       } else {
-        // Else add to Accepted, remove from Rejected/AdminRejected
         newAccepted.push(strId);
         newRejected = newRejected.filter(i => i !== strId);
         newAdminRejects = newAdminRejects.filter(i => i !== strId); 
       }
     } 
     else if (action === "Reject") {
-      // TOGGLE: If already rejected, remove it
       if (newRejected.includes(strId)) {
-        newRejected = newRejected.filter(i => i !== strId);
+        newRejected = newRejected.filter(i => i !== strId); // Toggle Off
         newAdminRejects = newAdminRejects.filter(i => i !== strId);
       } else {
-        // Else add to Rejected, remove from Accepted
         newRejected.push(strId);
         newAccepted = newAccepted.filter(i => i !== strId);
       }
     }
 
-    // Update States
     setAcceptedIds(newAccepted);
     setRejectedIds(newRejected);
     setItemsRejectedByAdmin(newAdminRejects);
     
-    // Sync LocalStorage
     localStorage.setItem("superadmin_approved", JSON.stringify(newAccepted));
     localStorage.setItem("superadmin_rejected", JSON.stringify(newRejected));
     localStorage.setItem("admin_rejected_ids", JSON.stringify(newAdminRejects));
@@ -144,13 +151,13 @@ export default function ViewImagesPage({ user }) {
   };
 
   const resetSystem = () => {
-    if (window.confirm("RESET PIPELINE? This clears all progress.")) {
+    if (window.confirm("RESET EVERYTHING? This clears all approvals and locks.")) {
       localStorage.clear();
       window.location.reload();
     }
   };
 
-  // --- API: Send ADMIN Rejections (ONLINE) ---
+  // --- API CALLS ---
   const handleSendToAnnotation = async () => {
     await sendIdsToAnnotationAPI(itemsRejectedByAdmin, () => {
         setItemsRejectedByAdmin([]);
@@ -159,7 +166,6 @@ export default function ViewImagesPage({ user }) {
     });
   };
 
-  // --- API: Send SUPER ADMIN Rejections (ONLINE) ---
   const handleSuperAdminSendRejections = async () => {
     await sendIdsToAnnotationAPI(rejectedIds, () => {
         setRejectedIds([]);
@@ -167,7 +173,6 @@ export default function ViewImagesPage({ user }) {
     });
   };
 
-  // Shared API Logic (ONLINE - Hits Backend)
   const sendIdsToAnnotationAPI = async (idList, onSuccessCallback) => {
     if (idList.length === 0) { alert("No items to send."); return; }
     setIsSending(true);
@@ -178,7 +183,7 @@ export default function ViewImagesPage({ user }) {
     for (const item of itemsToSend) {
         const payload = { image_id: String(item.id), image_url: String(item.mainImage) };
         try {
-            const response = await fetch("http://172.18.1.25:5000/reject-image", {
+            const response = await fetch("http://172.18.1.34:5000/reject-image", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload),
@@ -186,46 +191,35 @@ export default function ViewImagesPage({ user }) {
             if (response.ok) successCount++;
         } catch (error) { console.error(error); }
     }
-    
     setIsSending(false);
-    
     if (successCount > 0) {
         alert(`🚀 Success! Sent ${successCount} items to Annotation Team.`);
         if (onSuccessCallback) onSuccessCallback();
     } else {
-        alert("❌ Failed to send items. Check console for details.");
+        alert("❌ Failed to send items. Check console.");
     }
   };
 
-  // --- PDF GENERATION (Multi-Page Support) ---
+  // --- PDF ---
   const handleDownloadPDF = async () => {
     const container = reportRef.current;
     if (!container) return;
-
     setIsGeneratingPdf(true);
     try {
         const pdf = new jsPDF("p", "mm", "a4");
         const items = container.querySelectorAll('.print-item');
-
         for (let i = 0; i < items.length; i++) {
             const canvas = await html2canvas(items[i], { scale: 2, useCORS: true });
             const imgData = canvas.toDataURL("image/png");
-
-            const imgWidth = 210; // A4 width in mm
+            const imgWidth = 210; 
             const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
             if (i > 0) pdf.addPage();
             pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight);
         }
-
         pdf.save("Detection_Report.pdf");
-        alert("✅ Report downloaded successfully!");
-    } catch (err) {
-        console.error("PDF Error:", err);
-        alert("❌ Failed to generate PDF.");
-    } finally {
-        setIsGeneratingPdf(false);
-    }
+        alert("✅ Report downloaded!");
+    } catch (err) { console.error(err); alert("❌ PDF Error"); } 
+    finally { setIsGeneratingPdf(false); }
   };
 
   // --- Helpers ---
@@ -248,6 +242,7 @@ export default function ViewImagesPage({ user }) {
   if (loading) return <div className="loading-screen">Loading Data...</div>;
   if (error) return <div className="error-screen">{error}</div>;
 
+  // 1. ADMIN LOCK SCREEN
   if (userRole === "admin" && !isSentToAdmin) {
     return (
         <div className="view-page-wrapper">
@@ -261,6 +256,7 @@ export default function ViewImagesPage({ user }) {
     );
   }
 
+  // 2. USER LOCK SCREEN
   if (userRole === "user" && !isSentToUser) {
     return (
         <div className="view-page-wrapper">
@@ -273,59 +269,73 @@ export default function ViewImagesPage({ user }) {
     );
   }
 
-  const allAccepted = images.length > 0 && acceptedIds.length === images.length;
+  // Calculate if All Visible Images are Accepted
+  const allAccepted = images.length > 0 && images.every(img => acceptedIds.includes(String(img.id)));
 
   return (
     <div className="view-page-wrapper">
       <div className="view-header">
         <div className="header-top-row">
-            <h1 className="page-title">Data Pipeline</h1>
+            <div style={{display:'flex', alignItems:'center', gap:'15px'}}>
+                <h1 className="page-title">Images View</h1>
+                {/* Status Indicator */}
+                {userRole === "superadmin" && (
+                    <span style={{ fontSize: '12px', fontWeight: 'bold', padding: '5px 10px', borderRadius: '4px', background: isSentToAdmin ? '#dcfce7' : '#fee2e2', color: isSentToAdmin ? '#166534' : '#991b1b' }}>
+                        {isSentToAdmin ? "STATUS: UNLOCKED" : "STATUS: LOCKED"}
+                    </span>
+                )}
+            </div>
             
             <div className="header-actions">
-                {(userRole === "admin" || userRole === "user") && (
-                    <button 
-                        className="debug-reset-btn" 
-                        onClick={handleDownloadPDF} 
-                        style={{ background: "#e0f2fe", color: "#0284c7", border: "1px solid #0ea5e9", marginRight: "10px" }}
-                        disabled={isGeneratingPdf}
-                    >
-                        {isGeneratingPdf ? "Generating..." : "📥 Report"}
-                    </button>
-                )}
+                {/* REPORT BUTTON - Now visible for Super Admin too */}
+                <button 
+                    className="debug-reset-btn" 
+                    onClick={handleDownloadPDF} 
+                    disabled={isGeneratingPdf} 
+                    style={{ background: "#e0f2fe", color: "#0284c7", border: "1px solid #0ea5e9", marginRight: "10px" }}
+                >
+                    {isGeneratingPdf ? "Generating..." : "📥 Report"}
+                </button>
 
                 {userRole === "superadmin" && (
                     <>
+                        {/* --- RE-LOCK BUTTON FOR TESTING --- */}
+                        {isSentToAdmin && (
+                             <button className="debug-reset-btn" onClick={handleReLockPipeline} style={{background: '#fef3c7', color: '#b45309', border: '1px solid #f59e0b', marginRight: '10px'}}>
+                                🔒 Re-Lock Pipeline
+                             </button>
+                        )}
+
                         <div className="notif-wrapper">
-                        <button className="notif-bell-btn" onClick={() => setShowNotif(!showNotif)}>
-                            🔔 {itemsRejectedByAdmin.length > 0 && <span className="notif-badge-count">{itemsRejectedByAdmin.length}</span>}
-                        </button>
-                        {showNotif && (
-                            <div className="notif-dropdown">
-                            <div className="notif-dd-header">
-                                <span>Admin Rejections</span>
-                                <button className="close-dd" onClick={() => setShowNotif(false)}>×</button>
-                            </div>
-                            <div className="notif-dd-body">
-                                {itemsRejectedByAdmin.length === 0 ? <p className="empty-notif">No pending rejections.</p> : 
-                                getNotificationItems().map(item => (
-                                    <div key={item.id} className="notif-dd-item">
-                                    <span className="notif-item-title">{item.cardTitle}</span>
-                                    <span className="notif-item-id">ID: {item.id}</span>
+                            <button className="notif-bell-btn" onClick={() => setShowNotif(!showNotif)}>
+                                🔔 {itemsRejectedByAdmin.length > 0 && <span className="notif-badge-count">{itemsRejectedByAdmin.length}</span>}
+                            </button>
+                            {showNotif && (
+                                <div className="notif-dropdown">
+                                    <div className="notif-dd-header">
+                                        <span>Admin Rejections</span>
+                                        <button className="close-dd" onClick={() => setShowNotif(false)}>×</button>
                                     </div>
-                                ))
-                                }
-                            </div>
-                            {itemsRejectedByAdmin.length > 0 && (
-                                <div className="notif-dd-footer">
-                                <button className="send-annotation-btn" onClick={handleSendToAnnotation} disabled={isSending}>
-                                    {isSending ? "Sending..." : "Send to Annotation Team"}
-                                </button>
+                                    <div className="notif-dd-body">
+                                        {itemsRejectedByAdmin.length === 0 ? <p className="empty-notif">No pending rejections.</p> : 
+                                        getNotificationItems().map(item => (
+                                            <div key={item.id} className="notif-dd-item">
+                                                <span className="notif-item-title">{item.cardTitle}</span>
+                                                <span className="notif-item-id">ID: {item.id}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    {itemsRejectedByAdmin.length > 0 && (
+                                        <div className="notif-dd-footer">
+                                            <button className="send-annotation-btn" onClick={handleSendToAnnotation} disabled={isSending}>
+                                                {isSending ? "Sending..." : "Send to Annotation Team"}
+                                            </button>
+                                        </div>
+                                    )}
                                 </div>
                             )}
-                            </div>
-                        )}
                         </div>
-                        <button className="debug-reset-btn" onClick={resetSystem}>Reset</button>
+                        <button className="debug-reset-btn" onClick={resetSystem} style={{marginLeft:'10px'}}>Reset All</button>
                     </>
                 )}
             </div>
@@ -342,54 +352,42 @@ export default function ViewImagesPage({ user }) {
                   <input type="checkbox" className="card-checkbox" checked={adminSelectedIds.includes(item.id)} onChange={() => handleAdminCheckbox(item.id)} />
                 </div>
               )}
-
               <div className={`result-card ${getCardClass(item.id)}`}>
-                
-                {/* --- CARD CONTENT (75% Image / 25% Text) --- */}
                 <div className="card-main-content">
                   <div className="result-image-container" onClick={() => setSelectedImg(item.mainImage)}>
                     <img src={item.mainImage} alt="" className="result-img" />
                     <div className="zoom-hint">Click to Zoom</div>
                   </div>
-                  
                   <div className="result-details">
                     <div>
                         <div className="det-header">
-                        <h2 className="det-title">{item.cardTitle || "Result"}</h2>
-                        <div className="det-meta-row">
-                            <span className="det-meta-item">🗓️ {item.meta?.date || "N/A"}</span>
-                            <span className="det-meta-item">📍 {item.meta?.location || "Lab"}</span>
-                        </div>
+                            <h2 className="det-title">{item.cardTitle || "Result"}</h2>
+                            <div className="det-meta-row">
+                                <span className="det-meta-item">🗓️ {item.meta?.date || "N/A"}</span>
+                                <span className="det-meta-item">📍 {item.meta?.location || "Lab"}</span>
+                            </div>
                         </div>
                         <div className="det-stats-section">
-                        <h3 className="stats-heading">{item.sectionTitle || "Statistics"}</h3>
-                        <div className="stats-stack">
-                            {item.metrics && item.metrics.map((metric, idx) => (
-                            <div key={idx} className="stat-box-dark">
-                                <span className="sb-label">{metric.label}</span>
-                                <span className="sb-value">{metric.value}</span>
+                            <h3 className="stats-heading">{item.sectionTitle || "Statistics"}</h3>
+                            <div className="stats-stack">
+                                {item.metrics && item.metrics.map((metric, idx) => (
+                                <div key={idx} className="stat-box-dark">
+                                    <span className="sb-label">{metric.label}</span>
+                                    <span className="sb-value">{metric.value}</span>
+                                </div>
+                                ))}
                             </div>
-                            ))}
-                        </div>
                         </div>
                     </div>
                     <div className="det-footer">{getStatusBadge(item.id)}</div>
                   </div>
                 </div>
-
-                {/* --- SUPER ADMIN BUTTONS (Toggle Logic) --- */}
                 {userRole === "superadmin" && (
                   <div className="superadmin-button-container">
-                    <button 
-                        className={`action-btn-outline accept ${acceptedIds.includes(String(item.id)) ? "active-choice" : ""}`} 
-                        onClick={() => handleSuperAdminAction("Accept", item.id)}
-                    >
+                    <button className={`action-btn-outline accept ${acceptedIds.includes(String(item.id)) ? "active-choice" : ""}`} onClick={() => handleSuperAdminAction("Accept", item.id)}>
                         {acceptedIds.includes(String(item.id)) ? "Accepted" : "Accept"}
                     </button>
-                    <button 
-                        className={`action-btn-outline reject ${rejectedIds.includes(String(item.id)) ? "active-choice" : ""}`} 
-                        onClick={() => handleSuperAdminAction("Reject", item.id)}
-                    >
+                    <button className={`action-btn-outline reject ${rejectedIds.includes(String(item.id)) ? "active-choice" : ""}`} onClick={() => handleSuperAdminAction("Reject", item.id)}>
                         {rejectedIds.includes(String(item.id)) ? "Rejected" : "Reject"}
                     </button>
                   </div>
@@ -400,7 +398,7 @@ export default function ViewImagesPage({ user }) {
         ))}
       </div>
 
-      {/* --- HIDDEN REPORT CONTAINER (PDF) --- */}
+      {/* PDF HIDDEN TEMPLATE */}
       <div id="print-container" ref={reportRef}>
         {images.map((item) => (
             <div key={item.id} className="print-item">
@@ -410,21 +408,11 @@ export default function ViewImagesPage({ user }) {
                 <div className="print-table-box">
                     <h3 className="print-title">{item.cardTitle} (ID: {item.id})</h3>
                     <table className="report-table">
-                        <thead>
-                            <tr>
-                                <th>Parameter</th>
-                                <th>Value</th>
-                            </tr>
-                        </thead>
+                        <thead><tr><th>Parameter</th><th>Value</th></tr></thead>
                         <tbody>
                             <tr><td>Date</td><td>{item.meta?.date}</td></tr>
                             <tr><td>Location</td><td>{item.meta?.location}</td></tr>
-                            {item.metrics?.map((m, i) => (
-                                <tr key={i}>
-                                    <td>{m.label}</td>
-                                    <td>{m.value}</td>
-                                </tr>
-                            ))}
+                            {item.metrics?.map((m, i) => (<tr key={i}><td>{m.label}</td><td>{m.value}</td></tr>))}
                         </tbody>
                     </table>
                 </div>
@@ -433,6 +421,7 @@ export default function ViewImagesPage({ user }) {
       </div>
 
       <div className="final-submit-wrapper">
+        {/* BUTTON: Unlock for Admin (Only if SuperAdmin + All Accepted + Locked) */}
         {userRole === "superadmin" && allAccepted && !isSentToAdmin && (
             <button className="global-submit-btn superadmin-theme" onClick={handleUnlockForAdmin}>
                 🔓 Unlock for Admin
@@ -445,10 +434,12 @@ export default function ViewImagesPage({ user }) {
             </button>
         )}
         
-        {userRole === "superadmin" && !allAccepted && rejectedIds.length === 0 && (
+        {/* MESSAGE: Tell user what to do if locked */}
+        {userRole === "superadmin" && !allAccepted && !isSentToAdmin && rejectedIds.length === 0 && (
             <div className="pipeline-status-msg">⚠️ Accept all images to unlock Admin view</div>
         )}
 
+        {/* ADMIN ACTIONS */}
         {userRole === "admin" && adminSelectedIds.length > 0 && (
           <button className="global-submit-btn reject-theme" onClick={submitToSuperAdmin}>
             Return {adminSelectedIds.length} to Super Admin
