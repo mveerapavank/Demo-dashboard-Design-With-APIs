@@ -20,6 +20,9 @@ body {
 .main-content {
   /* THE FIX: Use flex-grow and center alignment for everything inside */
   margin-left: 280px; 
+  width: 100%;            /* Ensure it fills that space */
+  max-width: 100vw;       /* Prevent it from being smaller than screen */
+  overflow-x: hidden;
   flex-grow: 1;
   display: flex;
   flex-direction: column;

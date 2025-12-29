@@ -4,9 +4,12 @@ import Sidebar from "./components/Sidebar";
 import ProtectedRoute from "./components/ProtectedRoute";
 import UploadPage from "./pages/UploadPage";
 import ViewImagesPage from "./pages/ViewImagesPage";
-import AnalyticsPage from "./pages/AnalyticsPage"; // NEW IMPORT
+import AnalyticsPage from "./pages/AnalyticsPage";
 import LoginPage from "./pages/LoginPage";
 import SuperAdminLogin from "./pages/SuperAdminLogin";
+import Alerts from "./pages/Alerts"; 
+import Projects from "./pages/Projects"; 
+import AdminManagement from "./pages/AdminManagement"; // ✅ Correct Import
 import "./App.css";
 
 export default function App() {
@@ -42,7 +45,7 @@ export default function App() {
       
       <main className={user ? "main-content" : "auth-content"}>
         <Routes>
-          {/* AUTH ROUTES: Redirect to landing page if already logged in */}
+          {/* AUTH ROUTES */}
           <Route 
             path="/login" 
             element={user ? <Navigate to={getLandingPage()} replace /> : <LoginPage setUser={setUser} />} 
@@ -70,12 +73,40 @@ export default function App() {
             } 
           />
           
-          {/* NEW: Analytics Route (Available to verified users) */}
           <Route 
             path="/analytics" 
             element={
               <ProtectedRoute user={user}>
                 <AnalyticsPage user={user} />
+              </ProtectedRoute>
+            } 
+          />
+
+          {/* Super Admin Only Routes */}
+          <Route 
+            path="/alerts" 
+            element={
+              <ProtectedRoute user={user} requiredRoles={["superadmin"]}>
+                <Alerts />
+              </ProtectedRoute>
+            } 
+          />
+
+          <Route 
+            path="/projects" 
+            element={
+              <ProtectedRoute user={user} requiredRoles={["superadmin"]}>
+                <Projects />
+              </ProtectedRoute>
+            } 
+          />
+
+          {/* ✅ Admin Management Route */}
+          <Route 
+            path="/admin-management" 
+            element={
+              <ProtectedRoute user={user} requiredRoles={["superadmin"]}>
+                <AdminManagement />
               </ProtectedRoute>
             } 
           />

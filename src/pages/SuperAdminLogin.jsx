@@ -21,7 +21,7 @@ export default function SuperAdminLogin({ setUser }) {
     setLoading(true);
 
     try {
-      const response = await fetch("http://172.18.1.34:5000/auth/login", {
+      const response = await fetch("http://172.18.1.34:8000/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
@@ -54,7 +54,7 @@ export default function SuperAdminLogin({ setUser }) {
     setLoading(true);
 
     try {
-      const response = await fetch("http://172.18.1.34:5000/auth/verify-otp", {
+      const response = await fetch("http://172.18.1.34:8000/auth/verify-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 

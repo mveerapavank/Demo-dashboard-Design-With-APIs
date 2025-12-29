@@ -1,0 +1,88 @@
+/* src/pages/analytics.css */
+
+/* --- LAYOUT FIX (Sidebar Compatible) --- */
+.analytics-page {
+  position: fixed;
+  top: 0;
+  left: 260px; /* Start exactly after Sidebar */
+  right: 0;
+  bottom: 0;
+  
+  /* Scrollable Content */
+  overflow-y: auto;
+  
+  /* LIGHT THEME BACKGROUND */
+  background-color: #f8fafc; 
+  color: #0f172a;
+  padding: 30px;
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* --- HEADER --- */
+.analytics-header {
+  margin-bottom: 30px;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 20px;
+}
+
+.page-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 8px 0;
+}
+
+.page-desc {
+  color: #64748b;
+  font-size: 14px;
+  margin: 0;
+}
+
+/* --- LOADING / ERROR STATES --- */
+.analytics-loading, .analytics-error {
+  position: fixed;
+  top: 0; left: 260px; right: 0; bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f8fafc;
+  color: #64748b;
+  font-size: 18px;
+  font-weight: 500;
+}
+.analytics-error { color: #ef4444; }
+
+/* --- GRID LAYOUT --- */
+.charts-grid-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  padding-bottom: 40px;
+}
+
+@media (max-width: 1200px) {
+  .charts-grid-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* --- LIGHT CARD STYLING --- */
+.chart-card-light {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 24px;
+  height: 400px;
+  /* Soft Shadow */
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  display: flex;
+  flex-direction: column;
+}
+
+.chart-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 24px;
+}

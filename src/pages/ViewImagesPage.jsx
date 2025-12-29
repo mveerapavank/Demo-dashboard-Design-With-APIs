@@ -34,7 +34,7 @@ export default function ViewImagesPage({ user }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("http://172.18.1.34:5000/get-result");
+        const response = await fetch("http://172.18.1.34:8000/get-result");
         if (!response.ok) throw new Error("Failed to fetch images");
         const data = await response.json();
         setImages(data.images || []); 
@@ -183,7 +183,7 @@ export default function ViewImagesPage({ user }) {
     for (const item of itemsToSend) {
         const payload = { image_id: String(item.id), image_url: String(item.mainImage) };
         try {
-            const response = await fetch("http://172.18.1.34:5000/reject-image", {
+            const response = await fetch("http://172.18.1.34:8000/reject-image", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload),
