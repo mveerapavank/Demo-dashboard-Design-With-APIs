@@ -11,7 +11,7 @@ export default function LoginPage({ setUser }) {
   const [step, setStep] = useState(1); 
 
   const [selectedRole, setSelectedRole] = useState("");
-  const [email, setEmail] = useState(""); // This maps to 'username' in API
+  const [username, setUsername] = useState(""); // Maps to 'username' in API
   const [password, setPassword] = useState("");
   const [otp, setOtp] = useState("");
   
@@ -27,23 +27,24 @@ export default function LoginPage({ setUser }) {
     setLoading(true);
 
     try {
-      // API Call: Validate Username & Password
-      const response = await fetch("http://172.18.1.34:8000/auth/login", {
+      // 1. API Call: Validate Username & Password
+      const response = await fetch("http://172.18.1.34:5000/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
-          username: email, // Assuming email is the username
-          password: password 
+          username: username, 
+          password: password,
+          required_role: selectedRole // ✅ Sending 'admin' or 'user'
         }),
       });
 
       if (!response.ok) {
-        throw new Error(`Invalid credentials for ${selectedRole}`);
+        throw new Error(`Invalid credentials or access denied for ${selectedRole}`);
       }
 
       // If success, backend sends OTP
       const data = await response.json();
-      console.log(`${selectedRole} Login Success:`, data);
+      console.log(`${selectedRole} Login Step 1 Success:`, data);
       
       setLoading(false);
       setStep(2); // Move to OTP Step
@@ -54,40 +55,69 @@ export default function LoginPage({ setUser }) {
     }
   };
 
-  // --- STEP 2: VERIFY OTP ---
+  // --- STEP 2 & 3: VERIFY OTP & GET TOKEN ---
   const handleOtpVerify = async (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
     try {
-      // API Call: Verify OTP
-      const response = await fetch("http://172.18.1.34:8000/auth/verify-otp", {
+      // 2. API Call: Verify OTP (POST)
+      const otpResponse = await fetch("http://172.18.1.34:5000/auth/verify-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
-          username: email, 
-          otp: parseInt(otp, 10) // Convert string to integer
+          username: username, 
+          otp: parseInt(otp, 10) 
         }),
       });
 
-      if (!response.ok) {
+      if (!otpResponse.ok) {
         throw new Error("Invalid OTP");
       }
 
-      // Login Successful
-      const userData = { 
-        name: selectedRole === "admin" ? "Admin User" : "Standard User", 
-        role: selectedRole 
-      };
-      
-      setUser(userData);
-      localStorage.setItem("user", JSON.stringify(userData));
-      navigate("/upload"); // Go to Dashboard
+      console.log("OTP Verified. Fetching final session...");
+
+      // 3. API Call: Get Success Token (GET)
+      const successResponse = await fetch(`http://172.18.1.34:5000/auth/success?username=${username}`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" }
+      });
+
+      if (!successResponse.ok) {
+        throw new Error("Failed to retrieve user session details");
+      }
+
+      const finalData = await successResponse.json();
+      console.log("Final Auth Data:", finalData);
+
+      if (finalData.status === "success") {
+        // Construct User Data
+        const userData = { 
+          name: selectedRole === "admin" ? "Admin User" : "Standard User", 
+          username: username,
+          role: finalData.role || selectedRole,
+          token: finalData.access_token
+        };
+        
+        // Save to Storage
+        setUser(userData);
+        localStorage.setItem("user", JSON.stringify(userData));
+        localStorage.setItem("token", finalData.access_token);
+
+        // Redirect based on Role
+        if (selectedRole === "admin") {
+          navigate("/upload"); 
+        } else {
+          navigate("/images");
+        }
+      } else {
+        throw new Error("Authentication flow failed at final step");
+      }
 
     } catch (err) {
       console.error(err);
-      setError("❌ Invalid OTP Code");
+      setError("❌ Authentication Failed: " + err.message);
       setLoading(false);
     }
   };
@@ -96,7 +126,7 @@ export default function LoginPage({ setUser }) {
   const handleBackToSelect = () => {
     setView("select");
     setStep(1);
-    setEmail("");
+    setUsername("");
     setPassword("");
     setOtp("");
     setError("");
@@ -108,10 +138,10 @@ export default function LoginPage({ setUser }) {
         
         <div className="login-header">
           <h1>DataDash Portal</h1>
-          <p>{view === "select" ? "Choose your login type" : `Login as ${selectedRole}`}</p>
+          <p>{view === "select" ? "Choose your login type" : `Login as ${selectedRole.charAt(0).toUpperCase() + selectedRole.slice(1)}`}</p>
         </div>
 
-        {error && <div style={{ color: "red", fontSize: "14px", marginBottom: "15px", background: "#fee2e2", padding: "10px", borderRadius: "6px" }}>{error}</div>}
+        {error && <div style={{ color: "#b91c1c", fontSize: "14px", marginBottom: "15px", background: "#fee2e2", padding: "10px", borderRadius: "6px", border: "1px solid #fca5a5" }}>{error}</div>}
 
         {/* --- VIEW 1: ROLE SELECTION --- */}
         {view === "select" ? (
@@ -132,12 +162,24 @@ export default function LoginPage({ setUser }) {
             {step === 1 && (
               <form onSubmit={handleLogin} className="login-form">
                 <div className="form-group">
-                  <label>Email / Username</label>
-                  <input type="text" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder={`Enter ${selectedRole} ID`} />
+                  <label>Username</label>
+                  <input 
+                    type="text" 
+                    value={username} 
+                    onChange={(e) => setUsername(e.target.value)} 
+                    required 
+                    placeholder={`Enter ${selectedRole} username`} 
+                  />
                 </div>
                 <div className="form-group">
                   <label>Password</label>
-                  <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required placeholder="Enter password" />
+                  <input 
+                    type="password" 
+                    value={password} 
+                    onChange={(e) => setPassword(e.target.value)} 
+                    required 
+                    placeholder="Enter password" 
+                  />
                 </div>
                 <button type="submit" className="login-btn" disabled={loading}>
                   {loading ? "Verifying..." : "Sign In"}
@@ -150,7 +192,7 @@ export default function LoginPage({ setUser }) {
             {step === 2 && (
               <form onSubmit={handleOtpVerify} className="login-form" style={{ animation: "fadeIn 0.5s" }}>
                 <div style={{ background: "#ecfdf5", padding: "10px", borderRadius: "6px", marginBottom: "10px", border: "1px solid #10b981", color: "#065f46", fontSize: "13px" }}>
-                  🔒 OTP sent to {email}
+                  🔒 OTP sent to registered email for {username}
                 </div>
 
                 <div className="form-group">
@@ -167,7 +209,7 @@ export default function LoginPage({ setUser }) {
                 </div>
 
                 <button type="submit" className="login-btn" style={{ background: "#10b981" }} disabled={loading}>
-                  {loading ? "Checking..." : "Verify OTP"}
+                  {loading ? "Finalizing..." : "Verify OTP"}
                 </button>
                 
                 <button type="button" className="back-link" onClick={() => { setStep(1); setOtp(""); setError(""); }}>

@@ -1,7 +1,7 @@
 // src/pages/SuperAdminLogin.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./login.css"; // Reuse existing styles
+import "./login.css"; 
 
 export default function SuperAdminLogin({ setUser }) {
   const [step, setStep] = useState(1); // 1 = Login, 2 = OTP
@@ -21,64 +21,97 @@ export default function SuperAdminLogin({ setUser }) {
     setLoading(true);
 
     try {
-      const response = await fetch("http://172.18.1.34:8000/auth/login", {
+      // 1. Send Login Request with required_role
+      const response = await fetch("http://172.18.1.34:5000/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
           username: username, 
-          password: password 
+          password: password,
+          required_role: "superadmin" // ✅ NEW REQUIREMENT
         }),
       });
 
       if (!response.ok) {
-        throw new Error("Invalid Credentials");
+        throw new Error("Invalid Credentials or Unauthorized Role");
       }
 
-      // If success, API usually sends OTP to email/phone here
       const data = await response.json();
-      console.log("Login Success, waiting for OTP...", data);
+      console.log("Step 1 Success:", data);
       
       setLoading(false);
-      setStep(2); // Move to Step 2 (OTP)
+      setStep(2); // Move to OTP step
     } catch (err) {
       console.error(err);
-      setError("❌ Invalid Admin Credentials or Server Error");
+      setError("❌ Invalid Credentials or Server Error");
       setLoading(false);
     }
   };
 
-  // --- STEP 2: VERIFY OTP ---
+  // --- STEP 2 & 3: VERIFY OTP & GET TOKEN ---
   const handleOtpVerify = async (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
     try {
-      const response = await fetch("http://172.18.1.34:8000/auth/verify-otp", {
+      // 2. Verify OTP (POST)
+      const otpResponse = await fetch("http://172.18.1.34:5000/auth/verify-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
           username: username, 
-          otp: parseInt(otp, 10) // Backend expects an integer (0)
+          otp: parseInt(otp, 10) // Ensure OTP is an integer
         }),
       });
 
-      if (!response.ok) {
-        throw new Error("Invalid OTP");
+      if (!otpResponse.ok) {
+        throw new Error("Invalid OTP Code");
       }
 
-      // If OTP is correct
-      const data = await response.json();
-      console.log("OTP Verified:", data);
+      console.log("OTP Verified. Fetching final details...");
 
-      const userData = { name: "Super Admin", role: "superadmin" };
-      setUser(userData);
-      localStorage.setItem("user", JSON.stringify(userData));
-      navigate("/upload"); // Go to Dashboard
+      // 3. Final Success Check (GET) - ✅ NEW REQUIREMENT
+      // We pass username as a query parameter
+      const successResponse = await fetch(`http://172.18.1.34:5000/auth/success?username=${username}`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" }
+      });
+
+      if (!successResponse.ok) {
+        throw new Error("Failed to retrieve user session details");
+      }
+
+      const finalData = await successResponse.json();
+      console.log("Final Auth Data:", finalData);
+
+      // Check if status is success
+      if (finalData.status === "success") {
+        
+        // Construct User Object
+        const userData = { 
+          name: "Super Admin", 
+          username: username,
+          role: finalData.role || "superadmin",
+          token: finalData.access_token 
+        };
+
+        // Save Token & User to LocalStorage
+        localStorage.setItem("user", JSON.stringify(userData));
+        localStorage.setItem("token", finalData.access_token); // Store JWT specifically if needed for API calls
+
+        // Update App State
+        setUser(userData);
+        
+        // Redirect
+        navigate("/upload"); 
+      } else {
+        throw new Error("Authentication failed in final step");
+      }
 
     } catch (err) {
       console.error(err);
-      setError("❌ Invalid OTP Code");
+      setError("❌ Authentication Failed: " + err.message);
       setLoading(false);
     }
   };
@@ -93,9 +126,9 @@ export default function SuperAdminLogin({ setUser }) {
           <p>Super Admin Access Only</p>
         </div>
 
-        {error && <div style={{ color: "red", fontSize: "14px", marginBottom: "15px", background: "#fee2e2", padding: "10px", borderRadius: "6px" }}>{error}</div>}
+        {error && <div style={{ color: "#b91c1c", fontSize: "14px", marginBottom: "15px", background: "#fee2e2", padding: "10px", borderRadius: "6px", border: "1px solid #fca5a5" }}>{error}</div>}
 
-        {/* --- STEP 1 FORM: CREDENTIALS --- */}
+        {/* --- STEP 1 FORM --- */}
         {step === 1 && (
           <form onSubmit={handleSuperLogin} className="login-form">
             <div className="form-group">
@@ -124,7 +157,7 @@ export default function SuperAdminLogin({ setUser }) {
           </form>
         )}
 
-        {/* --- STEP 2 FORM: OTP --- */}
+        {/* --- STEP 2 FORM --- */}
         {step === 2 && (
           <form onSubmit={handleOtpVerify} className="login-form" style={{ animation: "fadeIn 0.5s" }}>
             <div style={{ background: "#ecfdf5", padding: "10px", borderRadius: "6px", marginBottom: "10px", border: "1px solid #10b981", color: "#065f46", fontSize: "13px" }}>
@@ -145,7 +178,7 @@ export default function SuperAdminLogin({ setUser }) {
             </div>
 
             <button type="submit" className="login-btn" style={{ background: "#10b981" }} disabled={loading}>
-              {loading ? "Checking..." : "Verify OTP"}
+              {loading ? "Finalizing..." : "Verify & Login"}
             </button>
             
             <button 

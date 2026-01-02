@@ -40,7 +40,7 @@ export default function Projects({ onNavigateToAnalytics }) {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const response = await fetch("http://172.18.1.34:8000/get-projects");
+        const response = await fetch("http://172.18.1.34:5000/get-projects");
         if (!response.ok) {
           throw new Error("Failed to fetch projects");
         }

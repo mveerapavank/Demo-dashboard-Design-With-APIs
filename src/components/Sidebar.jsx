@@ -67,7 +67,7 @@ export default function Sidebar({ user, setUser }) {
 
               {/* ✅ NEW: Admin Management Tab */}
               <NavLink to="/admin-management" className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}>
-                <IconAdmin /><span>Admin Mgmt</span>
+                <IconAdmin /><span>Admins</span>
               </NavLink>
             </>
           )}

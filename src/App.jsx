@@ -9,7 +9,7 @@ import LoginPage from "./pages/LoginPage";
 import SuperAdminLogin from "./pages/SuperAdminLogin";
 import Alerts from "./pages/Alerts"; 
 import Projects from "./pages/Projects"; 
-import AdminManagement from "./pages/AdminManagement"; // ✅ Correct Import
+import AdminManagement from "./pages/AdminManagement"; 
 import "./App.css";
 
 export default function App() {
@@ -77,7 +77,8 @@ export default function App() {
             path="/analytics" 
             element={
               <ProtectedRoute user={user}>
-                <AnalyticsPage user={user} />
+                {/* ✅ UPDATED: Passed setUser here so the Unlock button works */}
+                <AnalyticsPage user={user} setUser={setUser} />
               </ProtectedRoute>
             } 
           />
@@ -101,7 +102,7 @@ export default function App() {
             } 
           />
 
-          {/* ✅ Admin Management Route */}
+          {/* Admin Management Route */}
           <Route 
             path="/admin-management" 
             element={

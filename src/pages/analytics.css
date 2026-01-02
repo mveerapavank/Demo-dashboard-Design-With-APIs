@@ -1,26 +1,25 @@
 /* src/pages/analytics.css */
 
-/* --- LAYOUT FIX (Sidebar Compatible) --- */
+/* --- 1. MAIN LAYOUT --- */
 .analytics-page {
   position: fixed;
   top: 0;
-  left: 260px; /* Start exactly after Sidebar */
+  left: 260px; /* Aligns with Sidebar */
   right: 0;
   bottom: 0;
-  
-  /* Scrollable Content */
   overflow-y: auto;
-  
-  /* LIGHT THEME BACKGROUND */
-  background-color: #f8fafc; 
-  color: #0f172a;
+  background-color: #f8fafc; /* Light Theme Background */
   padding: 30px;
   box-sizing: border-box;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: #0f172a;
 }
 
-/* --- HEADER --- */
+/* --- 2. HEADER --- */
 .analytics-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
   margin-bottom: 30px;
   border-bottom: 1px solid #e2e8f0;
   padding-bottom: 20px;
@@ -30,7 +29,7 @@
   font-size: 28px;
   font-weight: 700;
   color: #0f172a;
-  margin: 0 0 8px 0;
+  margin: 0 0 5px 0;
 }
 
 .page-desc {
@@ -39,21 +38,108 @@
   margin: 0;
 }
 
-/* --- LOADING / ERROR STATES --- */
-.analytics-loading, .analytics-error {
-  position: fixed;
-  top: 0; left: 260px; right: 0; bottom: 0;
+/* --- 3. TOGGLE BUTTONS (Lock/Unlock) --- */
+.unlock-controls {
+  display: flex;
+  gap: 12px;
+}
+
+.btn-toggle {
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #f8fafc;
-  color: #64748b;
-  font-size: 18px;
-  font-weight: 500;
 }
-.analytics-error { color: #ef4444; }
 
-/* --- GRID LAYOUT --- */
+/* State: UNLOCKED (Active/Green) */
+.btn-toggle.unlocked {
+  background-color: #10b981;
+  color: white;
+}
+.btn-toggle.unlocked:hover {
+  background-color: #059669;
+}
+
+/* State: LOCKED (Inactive/Red) */
+.btn-toggle.locked {
+  background-color: #ef4444;
+  color: white;
+}
+.btn-toggle.locked:hover {
+  background-color: #dc2626;
+}
+
+/* --- 4. LOCKED VIEW (Pipeline/Wait Card) --- */
+.centered-view {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 80vh;
+}
+
+.data-wait-card {
+  background: white;
+  padding: 40px;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+  text-align: center;
+  max-width: 500px;
+  width: 100%;
+}
+
+.pulse-ring {
+  font-size: 40px;
+  margin-bottom: 20px;
+  display: inline-block;
+}
+
+.wait-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 10px;
+}
+
+.wait-desc {
+  color: #6b7280;
+  font-size: 14px;
+  line-height: 1.5;
+  margin-bottom: 24px;
+}
+
+.status-badge {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 11px;
+  text-transform: uppercase;
+  display: inline-block;
+}
+
+.btn-outline {
+  background: white;
+  border: 1px solid #d1d5db;
+  color: #374151;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-outline:hover {
+  background: #f3f4f6;
+}
+
+/* --- 5. CHARTS GRID & CARDS --- */
 .charts-grid-container {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -67,15 +153,13 @@
   }
 }
 
-/* --- LIGHT CARD STYLING --- */
 .chart-card-light {
   background-color: #ffffff;
   border: 1px solid #e2e8f0;
   border-radius: 12px;
   padding: 24px;
   height: 400px;
-  /* Soft Shadow */
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
   display: flex;
   flex-direction: column;
 }
@@ -85,4 +169,22 @@
   font-weight: 700;
   color: #1e293b;
   margin-bottom: 24px;
+}
+
+/* --- 6. LOADING / ERROR STATES --- */
+.analytics-loading, .analytics-error {
+  position: fixed;
+  top: 0; left: 260px; right: 0; bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f8fafc;
+  color: #64748b;
+  font-size: 18px;
+  font-weight: 500;
+  z-index: 10;
+}
+
+.analytics-error {
+  color: #ef4444;
 }
