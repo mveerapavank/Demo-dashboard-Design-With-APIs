@@ -22,7 +22,7 @@ export default function SuperAdminLogin({ setUser }) {
 
     try {
       // 1. Send Login Request with required_role
-      const response = await fetch("http://172.18.1.34:5000/auth/login", {
+      const response = await fetch("http://172.18.1.35:5000/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
@@ -56,7 +56,7 @@ export default function SuperAdminLogin({ setUser }) {
 
     try {
       // 2. Verify OTP (POST)
-      const otpResponse = await fetch("http://172.18.1.34:5000/auth/verify-otp", {
+      const otpResponse = await fetch("http://172.18.1.35:5000/auth/verify-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
@@ -73,7 +73,7 @@ export default function SuperAdminLogin({ setUser }) {
 
       // 3. Final Success Check (GET) - ✅ NEW REQUIREMENT
       // We pass username as a query parameter
-      const successResponse = await fetch(`http://172.18.1.34:5000/auth/success?username=${username}`, {
+      const successResponse = await fetch(`http://172.18.1.35:5000/auth/success?username=${username}`, {
         method: "GET",
         headers: { "Content-Type": "application/json" }
       });

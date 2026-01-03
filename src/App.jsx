@@ -10,6 +10,12 @@ import SuperAdminLogin from "./pages/SuperAdminLogin";
 import Alerts from "./pages/Alerts"; 
 import Projects from "./pages/Projects"; 
 import AdminManagement from "./pages/AdminManagement"; 
+import UserManagement from "./pages/UserManagement"; 
+import TrustBinPage from "./pages/TrustBinPage"; 
+
+// ✅ NEW IMPORT
+import SuperAdminDashboard from "./pages/SuperAdminDashboard"; 
+
 import "./App.css";
 
 export default function App() {
@@ -32,15 +38,17 @@ export default function App() {
 
   if (loading) return null;
 
-  // Determine landing page based on role
+  // Landing page logic
   const getLandingPage = () => {
     if (!user) return "/login";
+    // If superadmin, land on the new dashboard; otherwise follow old logic
+    if (user.role === "superadmin") return "/superadmin-dashboard";
     return user.role === "user" ? "/images" : "/upload";
   };
 
   return (
     <div className="app-root">
-      {/* Sidebar only renders if a user session is active */}
+      {/* Sidebar renders if user is logged in */}
       {user && <Sidebar user={user} setUser={setUser} />}
       
       <main className={user ? "main-content" : "auth-content"}>
@@ -55,7 +63,17 @@ export default function App() {
             element={user ? <Navigate to={getLandingPage()} replace /> : <SuperAdminLogin setUser={setUser} />} 
           />
 
-          {/* PROTECTED ROUTES */}
+          {/* ✅ NEW: SUPER ADMIN DASHBOARD ROUTE */}
+          <Route 
+            path="/superadmin-dashboard" 
+            element={
+              <ProtectedRoute user={user} requiredRoles={["superadmin"]}>
+                <SuperAdminDashboard />
+              </ProtectedRoute>
+            } 
+          />
+
+          {/* PROTECTED ROUTES (Admin & Super Admin) */}
           <Route 
             path="/upload" 
             element={
@@ -64,6 +82,17 @@ export default function App() {
               </ProtectedRoute>
             } 
           />
+          
+          <Route 
+            path="/trust-bin" 
+            element={
+              <ProtectedRoute user={user} requiredRoles={["admin", "superadmin"]}>
+                <TrustBinPage user={user} />
+              </ProtectedRoute>
+            } 
+          />
+
+          {/* SHARED ROUTES (Everyone) */}
           <Route 
             path="/images" 
             element={
@@ -77,13 +106,22 @@ export default function App() {
             path="/analytics" 
             element={
               <ProtectedRoute user={user}>
-                {/* ✅ UPDATED: Passed setUser here so the Unlock button works */}
                 <AnalyticsPage user={user} setUser={setUser} />
               </ProtectedRoute>
             } 
           />
 
-          {/* Super Admin Only Routes */}
+          {/* ADMIN ONLY ROUTE */}
+          <Route 
+            path="/user-management" 
+            element={
+              <ProtectedRoute user={user} requiredRoles={["admin"]}>
+                <UserManagement />
+              </ProtectedRoute>
+            } 
+          />
+
+          {/* SUPER ADMIN ONLY ROUTES */}
           <Route 
             path="/alerts" 
             element={
@@ -102,7 +140,6 @@ export default function App() {
             } 
           />
 
-          {/* Admin Management Route */}
           <Route 
             path="/admin-management" 
             element={

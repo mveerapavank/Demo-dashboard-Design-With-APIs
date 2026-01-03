@@ -45,7 +45,7 @@ export default function Alerts() {
   useEffect(() => {
     const fetchAlerts = async () => {
       try {
-        const response = await fetch("http://172.18.1.34:5000/get-alerts");
+        const response = await fetch("http://172.18.1.35:5000/get-alerts");
         if (!response.ok) {
           throw new Error("Failed to fetch alerts");
         }

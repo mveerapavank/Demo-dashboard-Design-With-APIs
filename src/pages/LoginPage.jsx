@@ -28,7 +28,7 @@ export default function LoginPage({ setUser }) {
 
     try {
       // 1. API Call: Validate Username & Password
-      const response = await fetch("http://172.18.1.34:5000/auth/login", {
+      const response = await fetch("http://172.18.1.35:5000/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
@@ -63,7 +63,7 @@ export default function LoginPage({ setUser }) {
 
     try {
       // 2. API Call: Verify OTP (POST)
-      const otpResponse = await fetch("http://172.18.1.34:5000/auth/verify-otp", {
+      const otpResponse = await fetch("http://172.18.1.35:5000/auth/verify-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
@@ -79,7 +79,7 @@ export default function LoginPage({ setUser }) {
       console.log("OTP Verified. Fetching final session...");
 
       // 3. API Call: Get Success Token (GET)
-      const successResponse = await fetch(`http://172.18.1.34:5000/auth/success?username=${username}`, {
+      const successResponse = await fetch(`http://172.18.1.35:5000/auth/success?username=${username}`, {
         method: "GET",
         headers: { "Content-Type": "application/json" }
       });

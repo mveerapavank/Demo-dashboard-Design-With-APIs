@@ -41,7 +41,7 @@ export default function AnalyticsPage({ user }) {
 
   const fetchAnalytics = async () => {
     try {
-      const response = await fetch("http://172.18.1.34:5000/get-analytics");
+      const response = await fetch("http://172.18.1.35:5000/get-analytics");
       if (!response.ok) throw new Error("Failed to fetch analytics data");
       const jsonData = await response.json();
       setData(jsonData);

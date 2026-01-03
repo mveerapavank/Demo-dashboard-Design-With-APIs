@@ -1,0 +1,655 @@
+/* --- Global Dashboard Layout --- */
+.dashboard-wrapper {
+  padding: 32px;
+  background-color: #f8fafc; /* Matching Analytics Page */
+  min-height: 100vh;
+  font-family: 'Inter', sans-serif;
+  color: #1e293b;
+}
+
+/* --- Top Utility Bar --- */
+.top-utility-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
+.search-pill-container { width: 500px; }
+.search-inner-wrapper { position: relative; display: flex; align-items: center; }
+.search-icon-inside { position: absolute; left: 16px; color: #94a3b8; }
+
+.search-input-clean {
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  padding: 12px 20px 12px 48px;
+  border-radius: 14px;
+  font-size: 14px;
+  outline: none;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+  transition: border-color 0.2s;
+}
+
+.search-input-clean:focus { border-color: #3b82f6; }
+
+.bell-wrapper { position: relative; cursor: pointer; }
+.bell-icon-large { color: #64748b; }
+.notif-dot-active {
+  position: absolute; top: 0; right: 0;
+  width: 10px; height: 10px;
+  background: #ef4444; border-radius: 50%;
+  border: 2px solid #f8fafc;
+}
+
+/* --- Page Header --- */
+.page-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
+.main-title { font-size: 28px; font-weight: 800; color: #0f172a; margin: 0; }
+
+.add-project-pill-btn {
+  background: #f43f5e;
+  color: white;
+  border: none;
+  padding: 12px 28px;
+  border-radius: 50px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.add-project-pill-btn:hover { background: #e11d48; }
+
+/* --- WHITE KPI CARDS (BEST VISIBILITY) --- */
+.kpi-white-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  margin-bottom: 48px;
+}
+
+.kpi-card-white {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #f1f5f9;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+}
+
+.kpi-label { font-size: 14px; color: #64748b; font-weight: 600; margin-bottom: 6px; display: block; }
+.kpi-number { font-size: 32px; font-weight: 800; color: #0f172a; display: block; }
+.kpi-trend { font-size: 12px; font-weight: 700; margin-top: 8px; }
+
+/* KPI Trend Colors */
+.blue-up { color: #3b82f6; }
+.green-up { color: #10b981; }
+.purple-up { color: #a855f7; }
+.red-down { color: #ef4444; }
+
+/* Soft Colored Icon Pills */
+.kpi-icon-pill {
+  width: 54px; height: 54px;
+  border-radius: 16px;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.blue-light-bg { background: #eff6ff; color: #3b82f6; }
+.green-light-bg { background: #ecfdf5; color: #10b981; }
+.purple-light-bg { background: #faf5ff; color: #a855f7; }
+.red-light-bg { background: #fef2f2; color: #ef4444; }
+
+/* --- Project Grid --- */
+.section-title { font-size: 20px; font-weight: 700; margin-bottom: 24px; }
+.project-grid-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+
+.project-card-item {
+  background: #ffffff;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid #f1f5f9;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.project-card-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+}
+
+.card-thumb { position: relative; height: 180px; }
+.card-thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+.badge-id { position: absolute; bottom: 12px; left: 12px; background: rgba(0,0,0,0.7); color: white; padding: 4px 10px; border-radius: 8px; font-size: 11px; }
+.badge-status { position: absolute; top: 12px; right: 12px; background: #10b981; color: white; padding: 4px 14px; border-radius: 50px; font-size: 11px; font-weight: 700; }
+
+.card-info { padding: 20px; }
+.card-info h3 { font-size: 17px; font-weight: 700; margin: 0 0 8px 0; }
+.loc { color: #64748b; font-size: 14px; display: flex; align-items: center; margin-bottom: 20px; }
+
+/* View Details Button */
+.view-details-btn {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  width: 100%; padding: 12px;
+  background-color: #1e293b; color: #ffffff;
+  border: none; border-radius: 12px;
+  font-size: 14px; font-weight: 600; cursor: pointer;
+}
+
+.view-details-btn:hover { background-color: #0f172a; }
+
+/* ... (Keep all your existing CSS above this) ... */
+
+/* --- Modal Popup Styles --- */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(15, 23, 42, 0.6); /* Darker overlay for focus */
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+.modal-content {
+  background: white;
+  width: 450px;
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.modal-header h2 { font-size: 22px; font-weight: 800; color: #0f172a; margin: 0; }
+.close-icon { cursor: pointer; color: #64748b; transition: color 0.2s; }
+.close-icon:hover { color: #ef4444; }
+
+.input-group { margin-bottom: 18px; }
+.input-group label { display: block; font-size: 13px; font-weight: 700; color: #475569; margin-bottom: 8px; }
+
+.input-group input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.input-group input:focus { border-color: #3b82f6; }
+
+.upload-box {
+  width: 100%;
+  height: 120px;
+  border: 2px dashed #e2e8f0;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #94a3b8;
+  gap: 8px;
+  overflow: hidden;
+  transition: all 0.2s;
+}
+
+.upload-box:hover { border-color: #3b82f6; background: #f8fafc; }
+
+.upload-preview { width: 100%; height: 100%; object-fit: cover; }
+
+.modal-submit-btn {
+  width: 100%;
+  padding: 14px;
+  background-color: #f43f5e;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: transform 0.2s;
+}
+
+.modal-submit-btn:hover { background-color: #e11d48; transform: translateY(-2px); }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* --- Add these styles to your existing CSS file --- */
+
+.error-text {
+  color: #ef4444;
+  font-size: 11px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.input-error {
+  border-color: #fca5a5 !important;
+  background-color: #fffafb !important;
+}
+
+.upload-error {
+  border-color: #fca5a5 !important;
+  background-color: #fffafb !important;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.modal-cancel-btn {
+  flex: 1;
+  padding: 14px;
+  background-color: #f1f5f9;
+  color: #64748b;
+  border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.modal-cancel-btn:hover {
+  background-color: #e2e8f0;
+}
+
+.modal-submit-btn {
+  flex: 2; /* Submit button is wider */
+  padding: 14px;
+  background-color: #f43f5e;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+/* ... keep the rest of your modal CSS ... */
+/* --- Client Management Section --- */
+.client-management-section {
+  margin-bottom: 48px;
+}
+
+.client-logo-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.client-card {
+  background: white;
+  border: 1px solid #f1f5f9;
+  border-radius: 20px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.client-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  border-color: #e2e8f0;
+}
+
+.client-logo-wrapper {
+  width: 60px;
+  height: 60px;
+  background: #f8fafc;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+}
+
+.client-logo-img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.client-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.client-name-text {
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.client-status-tag {
+  font-size: 12px;
+  color: #10b981;
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+/* Modal Helper Styles */
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.modal-cancel-btn {
+  flex: 1;
+  padding: 12px;
+  background: #f1f5f9;
+  border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  color: #64748b;
+  cursor: pointer;
+}
+
+.modal-submit-btn {
+  flex: 2;
+  padding: 12px;
+  background: #f43f5e;
+  border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  color: white;
+  cursor: pointer;
+}
+/* --- Client Management Section (Updated for more items) --- */
+.client-management-section {
+  margin-bottom: 48px;
+}
+
+.client-logo-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* Shows 2 rows of 3 */
+  gap: 24px;
+}
+
+/* --- Card Action Buttons Layout --- */
+.card-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.view-details-btn, .view-projects-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+/* Primary Button Style (Navy) */
+.primary-btn {
+  background-color: #1e293b;
+  color: white;
+}
+
+.primary-btn:hover {
+  background-color: #0f172a;
+}
+
+/* Secondary Button Style (White/Light Grey) */
+.secondary-btn {
+  background-color: #f1f5f9;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+}
+
+.secondary-btn:hover {
+  background-color: #e2e8f0;
+  color: #0f172a;
+}
+
+/* Responsive tweak for Client Grid */
+@media (max-width: 1024px) {
+  .client-logo-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+/* --- Top Utility Bar Enhancements --- */
+.header-right-tools {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.add-client-top-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #f1f5f9;
+  color: #1e293b;
+  border: 1px solid #e2e8f0;
+  padding: 10px 18px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.add-client-top-btn:hover {
+  background-color: #e2e8f0;
+  transform: translateY(-2px);
+}
+
+/* --- Client Logo Grid Fixes --- */
+.client-logo-img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain; /* Ensures logos aren't stretched */
+  display: block;
+}
+
+/* --- Modal & Upload Improvements --- */
+.upload-box {
+  width: 100%;
+  height: 140px;
+  border: 2px dashed #cbd5e1;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  overflow: hidden;
+  position: relative;
+  background-color: #f8fafc;
+}
+
+.upload-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.modal-submit-btn {
+  width: 100%;
+  padding: 14px;
+  background-color: #1e293b;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.modal-submit-btn:hover {
+  background-color: #0f172a;
+}
+/* --- Parallel Header Layout --- */
+.section-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+/* Fix for heading margin */
+.section-header-row .section-title {
+  margin-bottom: 0;
+}
+
+/* Parallel Button Style */
+.add-inline-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #f1f5f9;
+  color: #1e293b;
+  border: 1px solid #e2e8f0;
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.add-inline-btn:hover {
+  background-color: #e2e8f0;
+  transform: translateY(-2px);
+}
+
+/* Fix for client logo grid wrapping */
+.client-logo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+  margin-bottom: 48px;
+}
+
+.client-logo-img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+/* Modal and Upload styling */
+.upload-box {
+  width: 100%;
+  height: 140px;
+  border: 2px dashed #e2e8f0;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background: #f8fafc;
+  overflow: hidden;
+}
+
+.upload-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.no-results-text {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 40px;
+  background: #ffffff;
+  border-radius: 16px;
+  color: #94a3b8;
+  font-weight: 600;
+  border: 1px dashed #e2e8f0;
+}
+/* --- Category Filter Tabs --- */
+.category-tabs-container {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 32px;
+  background: #f1f5f9;
+  padding: 6px;
+  border-radius: 14px;
+  width: fit-content;
+}
+
+.tab-btn {
+  padding: 10px 24px;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tab-btn:hover {
+  color: #0f172a;
+}
+
+.tab-btn.active {
+  background: white;
+  color: #0f172a;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+/* --- Section Spacing Fixes --- */
+.client-management-wrapper, .project-management-wrapper {
+  margin-bottom: 48px;
+  animation: fadeIn 0.3s ease;
+}
+
+.no-results-text {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 60px;
+  background: white;
+  border-radius: 20px;
+  color: #94a3b8;
+  font-weight: 600;
+  border: 2px dashed #e2e8f0;
+}
+
+/* Smooth Fade Animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Header gap adjustment */
+.header-actions-gap {
+    display: flex;
+    gap: 15px;
+}
