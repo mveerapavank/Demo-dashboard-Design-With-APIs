@@ -627,7 +627,7 @@
 
 /* --- Section Spacing Fixes --- */
 .client-management-wrapper, .project-management-wrapper {
-  margin-bottom: 48px;
+  margin-bottom:0 !important;
   animation: fadeIn 0.3s ease;
 }
 
@@ -652,4 +652,283 @@
 .header-actions-gap {
     display: flex;
     gap: 15px;
+}
+/* Navigation & Parallel Header */
+.section-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.back-button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  color: #1e293b;
+  font-weight: 800;
+  transition: all 0.2s ease;
+}
+
+.back-button:hover {
+  transform: translateX(-5px);
+  color: #3b82f6;
+}
+
+.add-inline-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #f1f5f9;
+  color: #1e293b;
+  border: 1px solid #e2e8f0;
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.add-inline-btn:hover {
+  background-color: #e2e8f0;
+}
+
+/* Modal Adjustments */
+.input-group select {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  background: white;
+  outline: none;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.client-status-tag {
+  color: #3b82f6;
+  font-weight: 700;
+  font-size: 12px;
+}
+/* --- Parallel Header Layout --- */
+.section-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+/* Parallel Button Style for Industry (matching Client style) */
+.add-inline-btn-industry {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #f43f5e; /* Red color to make it stand out */
+  color: white;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 6px -1px rgba(244, 63, 94, 0.2);
+}
+
+.add-inline-btn-industry:hover {
+  background-color: #e11d48;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(244, 63, 94, 0.3);
+}
+
+/* Reusing the inline button style for Clients as well */
+.add-inline-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #f1f5f9;
+  color: #1e293b;
+  border: 1px solid #e2e8f0;
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+/* Modal and Back Button fixes */
+.back-button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  color: #0f172a;
+  font-weight: 800;
+}
+/* Base grid for All Overview (Responsive) */
+.client-logo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+  margin-bottom: 48px;
+  width: 100%;
+}
+
+/* Specific layout for Clients Only tab to occupy full width */
+.client-logo-grid.full-width-layout {
+  grid-template-columns: repeat(3, 1fr); /* Forces 3 equal columns */
+}
+
+/* Ensure cards themselves take full width of their grid slot */
+.client-card {
+  background: white;
+  border: 1px solid #f1f5f9;
+  border-radius: 20px;
+  padding: 24px; /* Increased padding for better look in full width */
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%; /* Ensure card fills the grid slot */
+}
+
+/* Responsive adjustment: If screen is small, go back to 1 or 2 columns */
+@media (max-width: 992px) {
+  .client-logo-grid.full-width-layout {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .client-logo-grid.full-width-layout {
+    grid-template-columns: 1fr;
+  }
+}
+/* Ensure distinct spacing between sections in All Overview */
+.client-management-wrapper, 
+.project-management-wrapper {
+  margin-bottom: 60px; /* Increased margin for better visual separation */
+  padding-bottom: 20px;
+}
+.section-title {
+  border-left: 4px solid #f43f5e; /* Optional: Adds a small red accent to titles */
+  padding-left: 12px;
+  margin-bottom: 24px;
+}
+/* Container for the label and select box */
+.sort-wrapper {
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  padding: 6px 16px;
+  border-radius: 50px; /* Creates the pill shape */
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s ease;
+}
+
+.sort-wrapper:hover {
+  border-color: #cbd5e1;
+}
+
+.sort-label {
+  font-size: 13px;
+  color: #64748b;
+  font-weight: 600;
+  margin-right: 8px; /* Connects text to the dropdown */
+  white-space: nowrap;
+}
+
+.select-container {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.custom-select {
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 700;
+  color: #1e293b;
+  outline: none;
+  cursor: pointer;
+  padding-right: 20px; /* Space for the Chevron icon */
+  appearance: none; /* Removes default browser styling */
+  -webkit-appearance: none;
+}
+
+/* Position the Lucide Chevron icon manually within the pill */
+.select-arrow {
+  position: absolute;
+  right: 0;
+  pointer-events: none;
+  color: #94a3b8;
+}
+/* Base grid for All Overview */
+.client-logo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+  width: 100%;
+}
+
+/* Force 3 cards to fill exactly 100% width in the "Clients Only" tab */
+.client-logo-grid.full-width-layout {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+/* Individual Client Card Fix */
+.client-card {
+  width: 100%; /* Ensures card grows to fill the grid slot */
+  box-sizing: border-box;
+}
+
+/* Responsive adjustments for the full-width layout */
+@media (max-width: 1024px) {
+  .client-logo-grid.full-width-layout {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .client-logo-grid.full-width-layout {
+    grid-template-columns: 1fr;
+  }
+}
+.project-client-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #f1f5f9; /* Light grey background */
+  color: #3b82f6; /* Blue text to indicate clickability */
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 8px; /* Space between badge and location */
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.project-client-badge:hover {
+  background-color: #eff6ff;
+  border-color: #3b82f6;
+  transform: translateY(-1px);
+}
+
+/* Ensure the location text below it has proper spacing */
+.loc {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #64748b;
+  font-size: 14px;
+  margin-bottom: 16px;
 }
